@@ -1,13 +1,14 @@
 <template>
-    <div>
-      <h2>Home Page</h2>
-      <p>Welcome to the home page of our Vue.js app!</p>
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    name: 'HomePage',
-  };
-  </script>
-  
+    <TrackingInput />
+</template>
+
+<script>
+import TrackingInput from '@/components/widgets/TrackingInput.vue';
+
+export default {
+  name: 'HomePage',
+  components: {
+    TrackingInput,
+  },
+};
+</script>

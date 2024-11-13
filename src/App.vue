@@ -26,7 +26,7 @@
     <nav class="w-full h-14 bg-white flex justify-around items-center relative">
      <div class="flex space-x-10">
       <div class="relative group">
-        <RouterLink to="/track" class="flex items-baseline space-x-2"><i class="fi fi-ts-shipping-timed"></i><span>Track</span></RouterLink>
+        <RouterLink to="/" class="flex items-baseline space-x-2"><i class="fi fi-ts-shipping-timed"></i><span>Track</span></RouterLink>
         <!-- Dropdown for Track -->
         <div class="absolute hidden group-hover:block bg-white shadow-lg mt-1 rounded">
             <RouterLink to="/track1" class="block px-4 py-2 hover:bg-gray-200">Track Shipment</RouterLink>
