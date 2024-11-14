@@ -1,5 +1,5 @@
 <template>
-    <main class="flex grid-cols-3 gap-10 w-full justify-center items-center h-fit p-6">
+    <main class="flex grid-cols-3 gap-10 w-full justify-center items-center h-1/2 p-6">
         <CardComp
                 v-for="details in cardDetails"
                 :key="details.id"

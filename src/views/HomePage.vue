@@ -1,5 +1,5 @@
 <template>
-  <main class="h-dvh overflow-y-scroll">
+  <main class="h-screen overflow-y-scroll">
     <TrackingInput />
     <QuickService />
     <RolesComp />
