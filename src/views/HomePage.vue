@@ -1,16 +1,22 @@
 <template>
+  <main class="h-screen overflow-y-scroll">
     <TrackingInput />
-    <QuickMenus/>
+    <QuickService />
+    <RolesComp />
+  </main>
 </template>
 
 <script>
 import TrackingInput from '@/components/widgets/TrackingInput.vue';
-import QuickMenus from '@/components/widgets/QuickMenus.vue';
+import QuickService from '@/components/widgets/QuickService.vue';
+import RolesComp from '@/components/widgets/RolesComp.vue';
+
 export default {
   name: 'HomePage',
   components: {
     TrackingInput,
-    QuickMenus,
+    QuickService,
+    RolesComp,
   },
 };
 </script>
