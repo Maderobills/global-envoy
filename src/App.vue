@@ -57,7 +57,9 @@
 </nav>
   </header>
 
-  <RouterView />
+  <main class="h-lvh overflow-y-scroll">
+    <RouterView />
+  </main>
 </template>
 <style>
 @import '@flaticon/flaticon-uicons/css/all/all.css';
