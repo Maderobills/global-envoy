@@ -23,13 +23,13 @@
         </div>
       </div>
     </div>
-    <nav class="w-full h-14 bg-white flex justify-around items-center relative">
+    <nav class="w-full h-14 bg-white flex justify-around items-center relative z-50">
      <div class="flex space-x-10">
       <div class="relative group">
         <RouterLink to="/" class="flex items-baseline space-x-2"><i class="fi fi-ts-shipping-timed"></i><span>Track</span></RouterLink>
         <!-- Dropdown for Track -->
         <div class="absolute hidden group-hover:block bg-white shadow-lg mt-0 rounded">
-            <RouterLink to="/track1" class="block px-4 py-2 hover:bg-gray-200">Track Shipment</RouterLink>
+            <RouterLink to="/TrackPackage" class="block px-4 py-2 hover:bg-gray-200">Track Shipment</RouterLink>
             <RouterLink to="/track2" class="block px-4 py-2 hover:bg-gray-200">Track History</RouterLink>
         </div>
     </div>
