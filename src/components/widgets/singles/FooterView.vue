@@ -1,5 +1,5 @@
 <template>
-    <section class="w-screen flex flex-col space-y-6 p-20">
+    <section class="w-screen flex flex-col space-y-6 p-20 mb-4">
         <div class="w-full flex justify-evenly">
             <div class="space-y-4">
             <h5 class="text-slate-700 font-bold">Quick Links</h5>
@@ -46,7 +46,9 @@
             </div>
             <div class="space-y-2">
                 <h5 class="text-lg font-medium">Subscribe to our News</h5>
-                <input type="text" class="rounded py-1 px-2 w-64">
+                <div class="space-x-2"><input type="email" class="text-slate-900 rounded py-1 px-2 w-64">
+                    <button class="bg-slate-900 rounded  py-1 px-2">Subscribe</button></div>
+                
             </div>
             <div class="space-y-2 flex flex-col text-center">
                 <h5 class="text-lg font-medium">Follow us</h5>

@@ -4,7 +4,6 @@
     <QuickService />
     <RolesComp />
     <FooterView/>
-    <RolesComp />
   </main>
 </template>
 
