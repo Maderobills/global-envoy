@@ -44,7 +44,7 @@
     </div>
 
     <div class="relative group">
-        <RouterLink to="/cservice" class="flex items-baseline space-x-2"><i class="fi fi-rr-headset"></i><span>Customer Service</span></RouterLink>
+        <RouterLink to="/customer" class="flex items-baseline space-x-2"><i class="fi fi-rr-headset"></i><span>Customer Service</span></RouterLink>
         <!-- Dropdown for Customer Service -->
         <div class="absolute hidden group-hover:block bg-white shadow-lg mt-0 rounded">
             <RouterLink to="/service1" class="block px-4 py-2 hover:bg-gray-200">FAQs</RouterLink>
