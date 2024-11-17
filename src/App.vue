@@ -53,7 +53,7 @@
     </div>
      </div>
 
-    <RouterLink to="/logins">Customer Portal Logins</RouterLink>
+    <RouterLink to="/sign-up">Customer Portal Logins</RouterLink>
 </nav>
   </header>
 

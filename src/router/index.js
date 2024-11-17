@@ -1,3 +1,6 @@
+import ForgotPassword from '@/components/widgets/singles/auth-pages/ForgotPassword.vue'
+import SignIn from '@/components/widgets/singles/auth-pages/SignIn.vue'
+import SignUp from '@/components/widgets/singles/auth-pages/SignUp.vue'
 import CustomerServicePage from '@/views/CustomerServicePage.vue'
 import HomePage from '@/views/HomePage.vue'
 import TrackPage from '@/views/TrackPage.vue'
@@ -20,6 +23,21 @@ const router = createRouter({
       path: '/TrackPackage',
       name: 'TrackPage',
       component: TrackPage,
+    },
+    {
+      path: '/sign-up',
+      name: 'SignUp',
+      component: SignUp,
+    },
+    {
+      path: '/sign-in',
+      name: 'SignIn',
+      component: SignIn,
+    },
+    {
+      path: '/forgot-password',
+      name: 'ForgotPassword',
+      component: ForgotPassword,
     },
   ],
 })
