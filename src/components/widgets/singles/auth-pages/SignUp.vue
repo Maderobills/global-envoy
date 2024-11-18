@@ -109,7 +109,7 @@
               Already have an account? Go to log in
             </span>
           </RouterLink>
-          <a href="https://google.com">Goto Google</a>
+        
         </div>
       </div>
     </form>

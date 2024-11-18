@@ -8,7 +8,26 @@
           <p class="text-slate-400">Adminstrator Portal</p>
         </div>
         <hr class="border-gray-500 my-2">
+        <div>
+          <RouterLink>
+            <span>Oders</span>
+          </RouterLink>
+          <RouterLink>
+            <span>Tracking</span>
+          </RouterLink>
+        </div>
     </div>
-    <div cla>jkfdkfhgkljdlkfkdklfjlkd</div>
+    <div>
+    <h1>Firebase is {{ firebaseStore.isInitialized ? 'Initialized' : 'Not Initialized' }}</h1>
+  </div>
     </main>
 </template>
+<script setup>
+import { useFirebaseStore } from "../../firebase";
+
+const firebaseStore = useFirebaseStore();
+
+// Access the Firebase app
+const firebaseApp = firebaseStore.getFirebaseApp();
+console.log(firebaseApp);
+</script>
