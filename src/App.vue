@@ -23,7 +23,7 @@
         </div>
       </div>
     </div>
-    <nav class="w-full h-14 bg-white flex justify-around items-center relative z-50">
+    <nav class="w-full h-14 bg-white drop-shadow-sm flex justify-around items-center relative z-50">
      <div class="flex space-x-10">
       <div class="relative group">
         <RouterLink to="/" class="flex items-baseline space-x-2"><i class="fi fi-ts-shipping-timed"></i><span>Track</span></RouterLink>
@@ -57,7 +57,7 @@
 </nav>
   </header>
 
-  <main class="h-lvh overflow-y-scroll">
+  <main class="h-dvh overflow-y-scroll">
     <RouterView />
   </main>
 </template>

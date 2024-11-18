@@ -30,7 +30,7 @@
   
       <div class="flex space-x-4 w-full max-w-5xl bg-slate-100 p-6 rounded-lg">
         <div class="flex-1 bg-white bg-opacity-70 rounded-lg p-6">
-          <h2 class="text-xl font-bold text-emerald-600 mb-4">DHL EXPRESS</h2>
+          <h2 class="text-xl font-bold text-emerald-600 mb-4">GlobalEnvoy EXPRESS</h2>
           <p class="text-slate-300">Express courier delivered parcel and documents service for your shipping needs.</p>
           <span><br>
             <p class="p-0 font-bold">Shipment Tracking and Status:</p>
@@ -43,7 +43,7 @@
         </div>
   
         <div class="flex-1 rounded-lg p-6 bg-white bg-opacity-70">
-          <h2 class="text-xl font-bold text-emerald-600 mb-4">DHL eCOMMENCE</h2>
+          <h2 class="text-xl font-bold text-emerald-600 mb-4">GlobalEnvoy ECOMMERCE</h2>
           <p class="text-slate-300 line-clamp-2">Standard international document and package services. Are you expecting a shipment sent with DHL eCOMMENCE?</p>
           <span><br>
             <p class="p-0 font-bold">Shipment Tracking and Status:</p>

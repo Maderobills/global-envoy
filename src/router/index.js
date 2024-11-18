@@ -1,3 +1,4 @@
+import AdminHome from '@/components/admin/AdminHome.vue'
 import ForgotPassword from '@/components/widgets/singles/auth-pages/ForgotPassword.vue'
 import SignIn from '@/components/widgets/singles/auth-pages/SignIn.vue'
 import SignUp from '@/components/widgets/singles/auth-pages/SignUp.vue'
@@ -39,6 +40,13 @@ const router = createRouter({
       name: 'ForgotPassword',
       component: ForgotPassword,
     },
+
+    //ADMIN ROUTES HERE
+    {
+      path: '/admin',
+      name: 'AdminHome',
+      component: AdminHome,
+    }
   ],
 })
 
