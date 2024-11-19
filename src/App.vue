@@ -80,10 +80,21 @@ const isLoggedIn = computed(() => store.user.firstName !== 'Guest');
   </header>
 
   <main class="h-dvh overflow-y-scroll">
-    <RouterView />
+    <Transition name="fade">
+      <RouterView />
+    </Transition>
   </main>
 </template>
 
 <style>
 @import '@flaticon/flaticon-uicons/css/all/all.css';
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 </style>
