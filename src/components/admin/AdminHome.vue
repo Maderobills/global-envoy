@@ -23,7 +23,8 @@
     </main>
 </template>
 <script setup>
-import { useFirebaseStore } from "../../firebase";
+import { useFirebaseStore } from '@/stores/firebaseStore';
+
 
 const firebaseStore = useFirebaseStore();
 

@@ -89,8 +89,8 @@
 </template>
 
 <script setup>
+import { useFirebaseStore } from '@/stores/firebaseStore';
 import { ref } from 'vue';
-import { useFirebaseStore } from '../../../../firebase'; // Import your Firebase store
 
 // Form state
 const email = ref('');
