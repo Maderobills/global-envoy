@@ -1,77 +1,47 @@
 <template>
   <div>
-    <h1>Shipment Data</h1>
-    <button @click="loadShipment">Load Shipment</button>
-    <div v-if="shipmentStore.loading">Loading...</div>
-    <div v-if="shipmentStore.error">{{ shipmentStore.error }}</div>
+    <h1>Tracking Data</h1>
+    <div v-if="isLoading">Loading...</div>
+    <div v-if="error" class="error">{{ error }}</div>
 
-    <!-- Displaying Shipment Data -->
-    <div v-if="shipmentStore.shipmentData">
-      <p>
-        <strong>Destination Address:</strong>
-        {{ shipmentStore.shipmentData.destinationAddress }}
-      </p>
-      <p>
-        <strong>Current Status:</strong>
-        {{ shipmentStore.shipmentData.currentStatus }}
-      </p>
-      <p>
-        <strong>Shipment Date:</strong>
-        {{ formatDate(shipmentStore.shipmentData.shipmentDate) }}
-      </p>
-      <p>
-        <strong>Estimated Delivery Date:</strong>
-        {{ formatDate(shipmentStore.shipmentData.estimatedDeliveryDate) }}
-      </p>
-      <p>
-        <strong>Tracking Number:</strong>
-        {{ shipmentStore.shipmentData.trackingNumber }}
-      </p>
+    <div v-if="packageDetails.length">
+      <h2>Package Details</h2>
+      <ul>
+        <li v-for="(detail, index) in packageDetails" :key="index">
+          Content: {{ detail.packageDetails.content }}
+        </li>
+      </ul>
     </div>
+    <div v-else>No package details available.</div>
 
-    <DashTrack
-      v-if="shipmentStore.shipmentData"
-      :package-id="shipmentStore.shipmentData.customerId"
-      :tracking-number="shipmentStore.shipmentData.trackingNumber"
-      :delivered-from="shipmentStore.shipmentData.destinationAddress"
-      :delivered-to="shipmentStore.shipmentData.destinationAddress"
-      :estimated-delivery="formatDate(shipmentStore.shipmentData.estimatedDeliveryDate)"
-    />
+    <button @click="loadData">Fetch Tracking Data</button>
   </div>
 </template>
 
 <script>
-import { useShipmentStore } from "@/stores/shipmentStore";
-import { ref } from "vue";
-import DashTrack from "../widgets/track-comps/DashTrack.vue";  // Ensure path is correct
+import { useTrackStore } from '@/stores/statusStore';
 
 export default {
-  components: {
-    DashTrack, // Register the DashTrack component
-  },
   setup() {
-    const shipmentStore = useShipmentStore();
-    const userId = "Id2ZY2f1xEepqCp9CcnFcQ79gFi2"; // Replace with actual user ID
-    const shipmentId = "Id2ZY2f1xEepqCp9CcnFcQ79gFi2"; // Replace with actual shipment ID
+    const trackStore = useTrackStore();
+    const docPath = '/Users/Id2ZY2f1xEepqCp9CcnFcQ79gFi2/Shipments/Id2ZY2f1xEepqCp9CcnFcQ79gFi2/Tracking/12345678';
 
-    // Fetch shipment data
-    const loadShipment = () => {
-      shipmentStore.fetchShipmentData(userId, shipmentId);
-    };
-
-    // Helper function to format the date from seconds and nanoseconds
-    const formatDate = (timestamp) => {
-      const date = new Date(
-        timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000
-      );
-      return date.toLocaleString(); // Returns a human-readable date string
+    const loadData = () => {
+      console.log('Fetching data...');
+      trackStore.fetchTrackingData(docPath);
+      console.log('Store state:', trackStore.packageDetails);
     };
 
     return {
-      shipmentStore,
-      loadShipment,
-      formatDate,
+      ...trackStore,
+      loadData,
     };
   },
 };
 </script>
+
+<style>
+.error {
+  color: red;
+}
+</style>

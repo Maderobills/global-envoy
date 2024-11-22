@@ -1,33 +1,40 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
-import { getDatabase, ref as dbRef, onValue } from 'firebase/database';
+import { doc, getDoc, getFirestore } from 'firebase/firestore';
+import { firebaseApp } from '@/firebase';
+// Initialize Firestore
+const db = getFirestore(firebaseApp);
+export const useTrackStore = defineStore('trackStore', {
+  state: () => ({
+    dataDoc: null, // Store the entire document
+    packageDetails: [], // Specifically store PackageDetails
+    isLoading: false,
+    error: null,
+  }),
+  actions: {
+    async fetchTrackingData(docPath) {
+      this.isLoading = true;
+      this.error = null;
 
-export const useStatusStore = defineStore('status', () => {
-  const packagingData = ref({});
+      try {
+        // Create a document reference using the doc path
+        const docRef = doc(db, docPath);
 
-  const fetchPackagingData = async () => {
-    const db = getDatabase();
-    const path = '/Users/Id2ZY2f1xEepqCp9CcnFcQ79gFi2/Shipments/Id2ZY2f1xEepqCp9CcnFcQ79gFi2/Tracking/12345678/';
-    const packagingRef = dbRef(db, path);
-    
-    onValue(packagingRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        packagingData.value = Object.entries(data).map(([packaging, status]) => ({
-          location,
-          packaging,
-          status,
-        }));
-      } else {
-        console.log('No data available');
+        // Fetch the document data
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          this.dataDoc = data; // Store the entire document
+          this.packageDetails = data.PackageDetails || []; // Extract and store PackageDetails
+        } else {
+          throw new Error('Document does not exist.');
+        }
+      } catch (err) {
+        this.error = err.message;
+        console.error('Error fetching tracking data:', err);
+      } finally {
+        this.isLoading = false;
       }
-    }, {
-      onlyOnce: true // Fetch data only once
-    });
-  };
-
-  return {
-    packagingData,
-    fetchPackagingData,
-  };
+    },
+  },
 });

@@ -59,6 +59,16 @@
         No shipments found for this tracking number.
       </div>
     </section>
+    <section>
+      <StatusTrack
+      v-if="!error && shipmentStore.shipmentData"
+      location="warehouse"
+      note="order recieved"
+      :status="true"
+      time="December 30, 2024"
+    
+      />
+    </section>
 
     <FooterView />
   </main>
@@ -67,6 +77,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import DashTrack from '@/components/widgets/track-comps/DashTrack.vue'
+import StatusTrack from '@/components/widgets/track-comps/StatusTrack.vue'
 import FooterView from '@/components/widgets/singles/FooterView.vue'
 import { useShipmentStore } from '@/stores/shipmentStore'
 import { storeToRefs } from 'pinia'
@@ -79,7 +90,6 @@ const error = ref('')
 
 // Store setup with proper typing
 const shipmentStore = useShipmentStore()
-const { shipmentData } = storeToRefs(shipmentStore)
 
 // Computed properties
 const backgroundImageStyle = computed(() => ({
