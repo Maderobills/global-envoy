@@ -1,68 +1,31 @@
 <template>
   <div>
-    <h1>Shipment Data</h1>
-
-    <!-- Input field to enter the tracking number -->
-    <div>
-      <input v-model="trackingNumber" type="text" placeholder="Enter Tracking Number" />
-      <button @click="loadShipmentByTrackingNumber">Search Shipment</button>
-    </div>
-
-    <!-- Display the shipment data -->
-    <div v-if="filteredShipments.length > 0">
-      <ul>
-        <li v-for="shipment in filteredShipments" :key="shipment.id">
-          <strong>Tracking Number:</strong> {{ shipment.id }}<br />
-          <strong>Current Status:</strong> {{ shipment.currentStatus }}<br />
-          <strong>Customer ID:</strong> {{ shipment.customerId }}
-        </li>
-      </ul>
-    </div>
-
-    <!-- If no shipment found -->
-    <p v-else>No shipment found for the given tracking number.</p>
+      <h1>Shipment Data</h1>
+      <button @click="loadShipment">Load Shipment</button>
+      <div v-if="shipmentStore.loading">Loading...</div>
+      <div v-if="shipmentStore.error">{{ shipmentStore.error }}</div>
+      <pre v-if="shipmentStore.shipmentData">{{ shipmentStore.shipmentData }}</pre>
   </div>
 </template>
 
 <script>
 import { useShipmentStore } from '@/stores/shipmentStore';
-import { computed, ref } from 'vue';
-
-
+import { ref } from 'vue';
 
 export default {
   setup() {
-    const shipmentStore = useShipmentStore();
-    const trackingNumber = ref('');  // To bind the input field
-    const filteredShipments = computed(() => {
-      // Filter shipments based on the entered tracking number
-      return shipmentStore.shipments.filter(shipment => 
-        shipment.id.includes(trackingNumber.value)
-      );
-    });
+      const shipmentStore = useShipmentStore();
+      const userId = 'Id2ZY2f1xEepqCp9CcnFcQ79gFi2'; // Replace with actual user ID
+      const shipmentId = 'Id2ZY2f1xEepqCp9CcnFcQ79gFi2'; // Replace with actual shipment ID
 
-    // Method to fetch all shipments from the store
-    const loadShipments = async () => {
-      await shipmentStore.fetchShipments();
-    };
+      const loadShipment = () => {
+          shipmentStore.fetchShipments(userId, shipmentId);
+      };
 
-    // Method to filter shipments by tracking number
-    const loadShipmentByTrackingNumber = async () => {
-      // Ensure we fetch shipments when the user searches
-      if (!shipmentStore.shipments.length) {
-        await loadShipments(); // If no shipments are loaded, load them
-      }
-    };
-
-    return {
-      trackingNumber,
-      loadShipmentByTrackingNumber,
-      filteredShipments,
-    };
+      return {
+          shipmentStore,
+          loadShipment,
+      };
   },
 };
 </script>
-
-<style scoped>
-
-</style>

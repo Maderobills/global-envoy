@@ -1,52 +1,36 @@
+// src/stores/shipmentStore.js
 import { defineStore } from 'pinia';
-import { getFirestore, collection, getDocs, addDoc, query, where } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { firebaseApp } from '@/firebase';
 
 // Initialize Firestore
 const db = getFirestore(firebaseApp);
-const UUID = "Id2ZY2f1xEepqCp9CcnFcQ79gFi2"; // Your specific user UUID
 
 export const useShipmentStore = defineStore('shipment', {
-  state: () => ({
-    shipments: [],
-  }),
-  actions: {
-    // Fetch shipments based on trackingNumber
-    async fetchShipments(trackingNumber = '') {
-      try {
-        const shipmentsCollection = collection(db, "Users", UUID, 'Shipments');
-        let shipmentsQuery;
+    state: () => ({
+        shipmentData: null,
+        loading: false,
+        error: null,
+    }),
+    actions: {
+        async fetchShipmentData(userId, shipmentId) {
+            this.loading = true;
+            this.error = null;
 
-        if (trackingNumber) {
-          // Use startAt/endAt for partial matching
-          shipmentsQuery = query(
-            shipmentsCollection, 
-            where("trackingNumber", ">=", trackingNumber),
-            where("trackingNumber", "<=", trackingNumber + '\uf8ff')
-          );
-        } else {
-          // If no tracking number, fetch all shipments
-          shipmentsQuery = shipmentsCollection;
-        }
+            try {
+                const docRef = doc(db, `Users/${userId}/Shipments/${shipmentId}`);
+                const docSnap = await getDoc(docRef);
 
-        const snapshot = await getDocs(shipmentsQuery);
-
-        this.shipments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      } catch (error) {
-        console.error('Error fetching shipments:', error);
-        this.shipments = [];
-      }
+                if (docSnap.exists()) {
+                    this.shipmentData = docSnap.data();
+                } else {
+                    this.error = 'No such document!';
+                }
+            } catch (err) {
+                this.error = `Error fetching shipment data: ${err.message}`;
+            } finally {
+                this.loading = false;
+            }
+        },
     },
-
-    // Add a new shipment
-    async addShipment(shipment) {
-      try {
-        const shipmentsCollection = collection(db, "Users", UUID, 'Shipments');
-        const docRef = await addDoc(shipmentsCollection, shipment);
-        this.shipments.push({ id: docRef.id, ...shipment });
-      } catch (error) {
-        console.error('Error adding shipment:', error);
-      }
-    },
-  },
 });
