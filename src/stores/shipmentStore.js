@@ -1,6 +1,6 @@
 // src/stores/shipmentStore.js
 import { defineStore } from 'pinia';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import { firebaseApp } from '@/firebase';
 
 // Initialize Firestore

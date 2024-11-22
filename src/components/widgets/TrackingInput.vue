@@ -10,7 +10,7 @@
           class="rounded-s h-12 w-96 p-5 text-slate-900 text-md outline-none"
         />
         <button 
-          @click="emitTrackingNumber" 
+          @click="handleOnclick" 
           class="transition bg-slate-900 px-10 font-semibold hover:font-bold rounded shadow-slate-900 hover:shadow-md text-white">
           Track
         </button>
@@ -26,13 +26,7 @@ export default {
       trackingInput: '',
     };
   },
-  methods: {
-    emitTrackingNumber() {
-      if (this.trackingInput.trim()) {
-        this.$emit('track-number', this.trackingInput.trim());
-      }
-    }
-  },
+  
   computed: {
     backgroundImageStyle() {
       return {
