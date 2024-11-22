@@ -89,6 +89,7 @@
 </template>
 
 <script setup>
+import router from '@/router';
 import { useFirebaseStore } from '@/stores/firebaseStore';
 import { ref } from 'vue';
 
@@ -123,6 +124,7 @@ const handleLogin = async () => {
 
     // Handle successful login
     console.log('Login successful');
+    router.push('/')
     // Redirect or perform post-login actions
   } catch (err) {
     error.value = err.message || 'An error occurred during login';
