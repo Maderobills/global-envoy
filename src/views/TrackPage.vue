@@ -1,121 +1,84 @@
 <template>
-    <main>
-        <TrackingInput/>
+  <main>
+    <TrackingInput @track-number="onTrackShipment" />
 
-        <section class="flex flex-col w-11/12 justify-self-center p-4 space-y-10">
-            <div class="w-full space-y-2 text-white font-semibold bg-bgcolor rounded drop-shadow-2xl h-fit p-4">
-                <div class="w-full flex justify-between">
-                    <h4>Package ID: <span class="font-thin">24006</span></h4>
-                    <h4>Tracking Number: <span class="font-thin">123456789</span></h4>
-                </div>
-                <div class="w-full flex justify-between">
-                    <h4>Delivered from: <span class="font-thin">Chong Hong-Warehouse(B34) Shang-Street</span></h4>
-                    <h4>Delivered To: <span class="font-thin">Austin Warehouse</span></h4>
-                </div>
-                <h4>Estimated Delivery: <span class="font-thin">December 10, 2024</span></h4>
-
-            </div>
-            <div class="h-80 w-full bg-slate-100 rounded p-5 space-y-6 overflow-hidden overflow-y-auto">
-                <div class="h-10 border-l-4 border-emerald-500 bg-white flex items-center rounded space-x-2">
-                    <i class="fi fi-ts-bullet flex items-center text-lg pl-4"></i>
-                    <div class="bg-white flex items-center space-x-2 text-slate-600">
-                        <h4>Order Recieved</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h4>Chong Hong-Warehouse(B34) Shang-Street</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h3>November 2, 2024</h3>
-
-
-                    </div>
-                </div>
-                <div class="h-10 border-l-4 border-emerald-500 bg-white flex items-center rounded space-x-2">
-                    <i class="fi fi-ts-bullet flex items-center text-lg pl-4"></i>
-                    <div class="bg-white flex items-center space-x-2 text-slate-600">
-                        <h4>Order Recieved</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h4>Chong Hong-Warehouse(B34) Shang-Street</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h3>November 2, 2024</h3>
-
-
-                    </div>
-                </div>
-                <div class="h-10 border-l-4 border-emerald-500 bg-white flex items-center rounded space-x-2">
-                    <i class="fi fi-ts-bullet flex items-center text-lg pl-4"></i>
-                    <div class="bg-white flex items-center space-x-2 text-slate-600">
-                        <h4>Order Recieved</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h4>Chong Hong-Warehouse(B34) Shang-Street</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h3>November 2, 2024</h3>
-
-
-                    </div>
-                </div>
-                <div class="h-10 border-l-4 border-emerald-500 bg-white flex items-center rounded space-x-2">
-                    <i class="fi fi-ts-bullet flex items-center text-lg pl-4"></i>
-                    <div class="bg-white flex items-center space-x-2 text-slate-600">
-                        <h4>Order Recieved</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h4>Chong Hong-Warehouse(B34) Shang-Street</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h3>November 2, 2024</h3>
-
-
-                    </div>
-                </div>
-                <div class="h-10 border-l-4 border-emerald-500 bg-white flex items-center rounded space-x-2">
-                    <i class="fi fi-ts-bullet flex items-center text-lg pl-4"></i>
-                    <div class="bg-white flex items-center space-x-2 text-slate-600">
-                        <h4>Order Recieved</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h4>Chong Hong-Warehouse(B34) Shang-Street</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h3>November 2, 2024</h3>
-
-
-                    </div>
-                </div>
-                <div class="h-10 border-l-4 border-emerald-500 bg-white flex items-center rounded space-x-2">
-                    <i class="fi fi-ts-bullet flex items-center text-lg pl-4"></i>
-                    <div class="bg-white flex items-center space-x-2 text-slate-600">
-                        <h4>Order Recieved</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h4>Chong Hong-Warehouse(B34) Shang-Street</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h3>November 2, 2024</h3>
-
-
-                    </div>
-                </div>
-                <div class="h-10 border-l-4 border-yellow-500 bg-white flex items-center rounded shadow-2xl shadow-yellow-100 space-x-2">
-                    <i class="fi fi-ts-bullet flex items-center text-lg pl-4"></i>
-                    <div class="bg-white flex items-center space-x-2 text-slate-600">
-                        <h4>Order Recieved</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h4>Chong Hong-Warehouse(B34) Shang-Street</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h3>November 2, 2024</h3>
-
-
-                    </div>
-                </div>
-
-            </div>
-        </section>
-        <FooterView/>
-
-    </main>
+    <section class="flex flex-col w-11/12 justify-self-center p-4 space-y-10">
+      <template v-if="showingShipments && filteredShipments.length">
+        <DashTrack
+          v-for="shipment in filteredShipments"
+          :key="shipment.id"
+          :package-id="shipment.customerId"
+          :tracking-number="shipment.trackingNumber"
+          :delivered-from="shipment.shippedFrom"
+          :delivered-to="shipment.destinationAddress"
+          :estimated-delivery="shipment.estimatedDelivery"
+        />
+      </template>
+      <template v-else-if="showingShipments">
+        <div class="text-center text-gray-500">No shipments found.</div>
+      </template>
+      <StatusTrack
+        note="Order Received"
+        location="Chong Hong-Warehouse(B34) Shang-Street"
+        time="November 2, 2024"
+        :status="true"
+      />
+    </section>
+    <FooterView />
+  </main>
 </template>
+
 <script>
-import FooterView from '@/components/widgets/singles/FooterView.vue';
-import TrackingInput from '@/components/widgets/TrackingInput.vue';
+import { ref, computed } from "vue";
+import { useShipmentStore } from "@/stores/shipmentStore";
+import DashTrack from "@/components/widgets/track-comps/DashTrack.vue";
+import TrackingInput from "@/components/widgets/TrackingInput.vue";
+import StatusTrack from "@/components/widgets/track-comps/StatusTrack.vue";
+import FooterView from "@/components/widgets/singles/FooterView.vue";
 
 export default {
-    name: 'TrackPage',
-    components:{
-        TrackingInput,
-        FooterView,
-    }
-}
+  components: {
+    TrackingInput,
+    DashTrack,
+    StatusTrack,
+    FooterView,
+  },
+  setup() {
+    const shipmentStore = useShipmentStore();
+    const trackingNumber = ref("");
+    const showingShipments = ref(false);
+    const filteredShipments = ref([]);
+
+    const onTrackShipment = async (inputTrackingNumber) => {
+      try {
+        // Update tracking number
+        trackingNumber.value = inputTrackingNumber;
+
+        // Fetch shipments
+        await shipmentStore.fetchShipments(inputTrackingNumber);
+
+        // Filter shipments based on tracking number
+        const filtered = shipmentStore.shipments.filter((shipment) =>
+          shipment.trackingNumber
+            .toLowerCase()
+            .includes(inputTrackingNumber.toLowerCase())
+        );
+
+        // Update filtered shipments and show shipments
+        filteredShipments.value = filtered;
+        showingShipments.value = true;
+      } catch (error) {
+        console.error("Failed to load shipments:", error);
+        filteredShipments.value = [];
+        showingShipments.value = false;
+      }
+    };
+
+    return {
+      onTrackShipment,
+      filteredShipments,
+      showingShipments,
+    };
+  },
+};
 </script>
