@@ -103,9 +103,15 @@ import { useTrackStore } from '@/stores/statusStore'
 import DashTrack from '@/components/widgets/track-comps/DashTrack.vue'
 import StatusTrack from '@/components/widgets/track-comps/StatusTrack.vue'
 import FooterView from '@/components/widgets/singles/FooterView.vue'
+import { useFirebaseStore } from '@/stores/firebaseStore'
+
+const store = useFirebaseStore();
+const user = computed(() => store.user);
+const isLoggedIn = computed(() => user.value && user.value.uid !== '');
 
 // Constants
-const USER_ID = 'Id2ZY2f1xEepqCp9CcnFcQ79gFi2'
+const USER_ID = user.value ? user.value.uid : null;
+
 const docPath = '/Users/Id2ZY2f1xEepqCp9CcnFcQ79gFi2/Shipments/Id2ZY2f1xEepqCp9CcnFcQ79gFi2/Tracking/12345678/';
 
 const TRACKING_NUMBER_REGEX = /^[A-Z0-9]{6,}$/i

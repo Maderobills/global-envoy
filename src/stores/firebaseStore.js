@@ -9,6 +9,7 @@ const db = getFirestore(firebaseApp); // Initialize Firestore
 export const useFirebaseStore = defineStore("firebaseStore", {
   state: () => ({
     user: {
+      uid: "",
       firstName: "Guest", // Default value
       lastName: "User", // Default value
     },
@@ -25,6 +26,7 @@ export const useFirebaseStore = defineStore("firebaseStore", {
 
         // Fetch user profile data from Firestore
         const userProfile = await this.getUserProfile(user.uid);
+        this.user.uid = user.uid;
         this.user.firstName = userProfile.firstName || "User"; // Update firstName
         this.user.lastName = userProfile.lastName || "User"; // Update lastName
 
