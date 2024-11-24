@@ -1,9 +1,10 @@
 <template>
-      <div>
+   <section class="justify-self-center">
+    <div>
         <h1 class="text-emerald-600 m-9 text-4xl font-bold">CUSTOMER SERVICE</h1>
       </div>
   
-      <main class="w-4/5 justify-self-center items-center justify-center">
+      <main class="flex flex-col w-4/5 justify-self-center items-center justify-center">
         <div class="flex w-full space-x-4">
         <section class="flex-1 p-6 rounded-lg hover:shadow-2xl bg-white mb-8 h-64 space-y-6"> 
           <h2 class="text-lg font-semibold mb-2">Have a tracking number? Find your contact</h2>
@@ -28,7 +29,7 @@
         </div>
       </div>
   
-      <div class="flex space-x-4 w-full max-w-5xl bg-slate-100 p-6 rounded-lg">
+      <div class="flex space-x-4 w-full max-w-5xl  bg-gradient-to-r from-slate-500 to-slate-900 p-6 rounded-lg">
         <div class="flex-1 bg-white bg-opacity-70 rounded-lg p-6">
           <h2 class="text-xl font-bold text-emerald-600 mb-4">GlobalEnvoy EXPRESS</h2>
           <p class="text-slate-300">Express courier delivered parcel and documents service for your shipping needs.</p>
@@ -72,6 +73,7 @@
         </div>
       </div>
       </main>
+   </section>
   </template>
   
   <script>

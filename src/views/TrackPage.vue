@@ -92,7 +92,6 @@
       </TransitionGroup>
     </section>
 
-    <FooterView />
   </main>
 </template>
 
@@ -102,7 +101,6 @@ import { useShipmentStore } from '@/stores/shipmentStore'
 import { useTrackStore } from '@/stores/statusStore'
 import DashTrack from '@/components/widgets/track-comps/DashTrack.vue'
 import StatusTrack from '@/components/widgets/track-comps/StatusTrack.vue'
-import FooterView from '@/components/widgets/singles/FooterView.vue'
 import { useFirebaseStore } from '@/stores/firebaseStore'
 
 // State management

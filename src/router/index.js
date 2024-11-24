@@ -3,6 +3,7 @@ import TestMe from '@/components/test/TestMe.vue'
 import ForgotPassword from '@/components/widgets/singles/auth-pages/ForgotPassword.vue'
 import SignIn from '@/components/widgets/singles/auth-pages/SignIn.vue'
 import SignUp from '@/components/widgets/singles/auth-pages/SignUp.vue'
+import AboutUs from '@/views/AboutUs.vue'
 import CustomerServicePage from '@/views/CustomerServicePage.vue'
 import HomePage from '@/views/HomePage.vue'
 import TrackPage from '@/views/TrackPage.vue'
@@ -41,7 +42,11 @@ const router = createRouter({
       name: 'ForgotPassword',
       component: ForgotPassword,
     },
-
+    {
+      path: '/about-us',
+      name: 'AboutUs',
+      component: AboutUs,
+    },
     {
       path: '/testme',
       name: 'TestMe',

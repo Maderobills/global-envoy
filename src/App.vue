@@ -2,6 +2,7 @@
 import { useFirebaseStore } from '@/stores/firebaseStore';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
+import FooterView from './components/widgets/singles/FooterView.vue';
 
 const store = useFirebaseStore();
 const user = computed(() => store.user);
@@ -58,6 +59,7 @@ const isLoggedIn = computed(() => store.user.firstName !== 'Guest');
           <div class="absolute hidden group-hover:block bg-white shadow-lg mt-0 rounded">
             <RouterLink to="/service1" class="block px-4 py-2 hover:bg-gray-200">FAQs</RouterLink>
             <RouterLink to="/service2" class="block px-4 py-2 hover:bg-gray-200">Contact Support</RouterLink>
+            <RouterLink to="/about-us" class="block px-4 py-2 hover:bg-gray-200">About Us</RouterLink>
           </div>
         </div>
       </div>
@@ -82,7 +84,9 @@ const isLoggedIn = computed(() => store.user.firstName !== 'Guest');
   <main class="h-dvh overflow-y-scroll">
     <Transition name="fade">
       <RouterView />
+      
     </Transition>
+    <FooterView/>
   </main>
 </template>
 
