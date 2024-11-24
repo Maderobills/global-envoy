@@ -1,39 +1,42 @@
 import { defineStore } from 'pinia';
-import { doc, getDoc, getFirestore } from 'firebase/firestore';
+import { getDoc, doc, getFirestore } from 'firebase/firestore';
 import { firebaseApp } from '@/firebase';
+
 // Initialize Firestore
 const db = getFirestore(firebaseApp);
+
 export const useTrackStore = defineStore('trackStore', {
   state: () => ({
-    dataDoc: null, // Store the entire document
-    packageDetails: [], // Specifically store PackageDetails
-    isLoading: false,
+    content: null,
+    packageId: null,
+    loading: false,
     error: null,
   }),
   actions: {
     async fetchTrackingData(docPath) {
-      this.isLoading = true;
+      this.loading = true;
       this.error = null;
 
-      try {
-        // Create a document reference using the doc path
-        const docRef = doc(db, docPath);
+      const docRef = doc(db, docPath);
 
-        // Fetch the document data
+      try {
         const docSnap = await getDoc(docRef);
 
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          this.dataDoc = data; // Store the entire document
-          this.packageDetails = data.PackageDetails || []; // Extract and store PackageDetails
-        } else {
-          throw new Error('Document does not exist.');
+        if (!docSnap.exists()) {
+          throw new Error('No such document!');
         }
+
+        // Fetch and set the data
+        const data = docSnap.data();
+        this.content = data;
+        this.packageId = data.PackageDetails?.packageId || null; // Optional chaining
+
+        console.log('Fetched data:', data); // Log the fetched data
       } catch (err) {
-        this.error = err.message;
+        this.error = err.message || 'An error occurred while fetching tracking data.';
         console.error('Error fetching tracking data:', err);
       } finally {
-        this.isLoading = false;
+        this.loading = false;
       }
     },
   },

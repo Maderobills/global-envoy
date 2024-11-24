@@ -1,47 +1,75 @@
 <template>
   <div>
-    <h1>Tracking Data</h1>
-    <div v-if="isLoading">Loading...</div>
-    <div v-if="error" class="error">{{ error }}</div>
+    <h1>Tracking Information</h1>
+    <button @click="fetchTrackingData">Fetch Tracking Data</button>
 
-    <div v-if="packageDetails.length">
-      <h2>Package Details</h2>
-      <ul>
-        <li v-for="(detail, index) in packageDetails" :key="index">
-          Content: {{ detail.packageDetails.content }}
-        </li>
-      </ul>
+    <div v-if="loading">Loading...</div>
+    <div v-if="error">{{ error }}</div>
+    <div v-if="content">
+      <h2>Package ID: {{ content.PackageDetails?.packageId }}</h2>
+      <p>Content: {{ content.PackageDetails?.content }}</p>
+
+      <h3>Package Details</h3>
+      <div>
+        <StatusTrack
+          v-for="(status, key) in trackingStages"
+          :key="key"
+          :location="status.location"
+          :note="status.note"
+          :status="status.status"
+          :time="status.time"
+        />
+      </div>
     </div>
-    <div v-else>No package details available.</div>
-
-    <button @click="loadData">Fetch Tracking Data</button>
   </div>
 </template>
 
-<script>
+<script setup>
 import { useTrackStore } from '@/stores/statusStore';
+import StatusTrack from '../widgets/track-comps/StatusTrack.vue';
+import { computed } from 'vue';
 
-export default {
-  setup() {
-    const trackStore = useTrackStore();
-    const docPath = '/Users/Id2ZY2f1xEepqCp9CcnFcQ79gFi2/Shipments/Id2ZY2f1xEepqCp9CcnFcQ79gFi2/Tracking/12345678';
+// Access the Pinia store
+const trackStore = useTrackStore();
+const { content, loading, error, fetchTrackingData } = trackStore;
 
-    const loadData = () => {
-      console.log('Fetching data...');
-      trackStore.fetchTrackingData(docPath);
-      console.log('Store state:', trackStore.packageDetails);
-    };
+// Define the document path
+const docPath = '/Users/Id2ZY2f1xEepqCp9CcnFcQ79gFi2/Shipments/Id2ZY2f1xEepqCp9CcnFcQ79gFi2/Tracking/12345678/';
 
-    return {
-      ...trackStore,
-      loadData,
-    };
-  },
+// Fetch tracking data
+const fetchTrackingDataHandler = async () => {
+  await fetchTrackingData(docPath);
+  console.log('Fetched content:', content); // Log the fetched content
 };
+
+// Dynamically map the tracking stages
+const trackingStages = computed(() => {
+  if (!content) return [];
+  return ['delivered', 'packaging', 'transit1', 'transit2'].map(key => ({
+    key,
+    ...(content[key] || {}) // Spread operator with fallback
+  }));
+});
 </script>
 
-<style>
-.error {
-  color: red;
+<style scoped>
+h1 {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+h2, h3 {
+  margin-top: 15px;
+}
+button {
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #0056b3;
 }
 </style>

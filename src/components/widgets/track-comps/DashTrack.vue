@@ -18,6 +18,12 @@
     trackingNumber: String,
     deliveredFrom: String,
     deliveredTo: String,
-    estimatedDelivery: String
-  })
+    estimatedDelivery: String,
+  });
+  </script>
+  
+  <script>
+  export default {
+    name: 'PackageInfo',
+  };
   </script>

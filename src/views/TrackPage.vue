@@ -37,37 +37,59 @@
       </div>
     </div>
 
-    <!-- Results section with loading and error states -->
-    <section class="flex-1 w-full max-w-7xl mx-auto px-4 py-8 space-y-6">
-      <div v-if="error" class="p-4 bg-red-50 border border-red-200 rounded text-red-700">
+    <!-- Results section with improved error handling and loading states -->
+    <section class="flex-1 w-full max-w-7xl mx-auto px-4 py-8 space-y-6" aria-live="polite">
+      <div 
+        v-if="error" 
+        id="error-message"
+        role="alert"
+        class="p-4 bg-red-50 border border-red-200 rounded text-red-700"
+      >
         {{ error }}
       </div>
 
-      <DashTrack
-        v-if="!error && shipmentStore.shipmentData"
-        :package-id="shipmentStore.shipmentData.customerId"
-        :tracking-number="shipmentStore.shipmentData.trackingNumber"
-        :delivered-from="shipmentStore.shipmentData.destinationAddress"
-        :delivered-to="shipmentStore.shipmentData.destinationAddress"
-        :estimated-delivery="formatDate(shipmentStore.shipmentData.estimatedDeliveryDate)"
-      />
+      <Suspense>
+        <template #default>
+          <DashTrack
+            v-if="!error && shipmentData"
+            :package-id="shipmentData.customerId"
+            :tracking-number="shipmentData.trackingNumber"
+            :delivered-from="shipmentData.destinationAddress"
+            :delivered-to="shipmentData.destinationAddress"
+            :estimated-delivery="shipmentData.deliveryDate"
+          />
+        </template>
+        <template #fallback>
+          <div class="animate-pulse space-y-4">
+            <div class="h-4 bg-slate-200 rounded w-3/4"></div>
+            <div class="h-4 bg-slate-200 rounded w-1/2"></div>
+          </div>
+        </template>
+      </Suspense>
       
       <div 
-        v-else-if="showingShipments && !isLoading && !error" 
+        v-if="showNoResultsMessage" 
         class="text-center text-gray-500 py-12"
       >
         No shipments found for this tracking number.
       </div>
     </section>
-    <section>
-      <StatusTrack
-      v-if="!error && shipmentStore.shipmentData"
-      location="warehouse"
-      note="order recieved"
-      :status="true"
-      time="December 30, 2024"
-    
-      />
+
+    <section aria-label="Tracking timeline" class="w-full max-w-7xl mx-auto px-4">
+      <TransitionGroup 
+        name="list"
+        tag="div"
+        class="space-y-4"
+      >
+        <StatusTrack
+          v-for="status in sortedTrackingStages"
+          :key="status.key"
+          :location="status.location"
+          :note="status.note"
+          :status="status.status"
+          :time="status.time"
+        />
+      </TransitionGroup>
     </section>
 
     <FooterView />
@@ -75,78 +97,117 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watchEffect } from 'vue'
+import { useShipmentStore } from '@/stores/shipmentStore'
+import { useTrackStore } from '@/stores/statusStore'
 import DashTrack from '@/components/widgets/track-comps/DashTrack.vue'
 import StatusTrack from '@/components/widgets/track-comps/StatusTrack.vue'
 import FooterView from '@/components/widgets/singles/FooterView.vue'
-import { useShipmentStore } from '@/stores/shipmentStore'
-import { storeToRefs } from 'pinia'
-
-// State management
-const trackingInput = ref('')
-const showingShipments = ref(false)
-const isLoading = ref(false)
-const error = ref('')
-
-// Store setup with proper typing
-const shipmentStore = useShipmentStore()
-
-// Computed properties
-const backgroundImageStyle = computed(() => ({
-  backgroundImage: `url('https://img.freepik.com/free-photo/busy-shipping-port-with-containers-trade-action_91128-4581.jpg')`,
-}));
 
 // Constants
 const USER_ID = 'Id2ZY2f1xEepqCp9CcnFcQ79gFi2'
+const docPath = '/Users/Id2ZY2f1xEepqCp9CcnFcQ79gFi2/Shipments/Id2ZY2f1xEepqCp9CcnFcQ79gFi2/Tracking/12345678/';
 
-// Utility functions
-const formatDate = (timestamp: { seconds: number; nanoseconds: number }): string => {
-  try {
-    const date = new Date(
-      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000
-    )
-    return new Intl.DateTimeFormat('default', {
-      dateStyle: 'medium',
-      timeStyle: 'short'
-    }).format(date)
-  } catch (e) {
-    console.error('Error formatting date:', e)
-    return 'Invalid date'
-  }
-}
+const TRACKING_NUMBER_REGEX = /^[A-Z0-9]{6,}$/i
 
-// Clear all data
-const clearData = () => {
-  shipmentStore.$reset() // Reset the store to its initial state
-  showingShipments.value = false
-  error.value = ''
-}
+// State management
+const trackingInput = ref('')
+const isLoading = ref(false)
+const error = ref('')
+const showingShipments = ref(false)
+
+// Store initialization
+const shipmentStore = useShipmentStore()
+const trackStore = useTrackStore()
+
+// Computed properties
+const backgroundImageStyle = computed(() => ({
+  backgroundImage: 'url("/images/shipping-port-optimized.jpg")',
+  loading: 'lazy'
+}))
+
+const isValidTrackingNumber = computed(() => 
+  TRACKING_NUMBER_REGEX.test(trackingInput.value.trim())
+)
+
+const shipmentData = computed(() => shipmentStore.shipmentData)
+
+
+
+const showNoResultsMessage = computed(() => 
+  showingShipments.value && !isLoading.value && !error.value && !shipmentData.value
+)
+
+const sortedTrackingStages = computed(() => {
+  if (!trackStore.content) return [];
+  
+  // Define the fixed order of stages
+  const stageOrder = ['packaging', 'transit1', 'transit2', 'delivered'];
+  
+  return stageOrder
+    .map(key => ({
+      key,
+      ...(trackStore.content[key] || {}),
+    }))
+    .filter(stage => Object.keys(stage).length > 1); // Exclude empty stages
+});
+
 
 // Event handlers
-const handleSubmit = async () => {
-  if (!trackingInput.value.trim() || isLoading.value) return
-
-  clearData() // Clear previous data before new search
+async function handleSubmit() {
+  if (!isValidTrackingNumber.value || isLoading.value) return
+  
+  clearData()
   isLoading.value = true
   showingShipments.value = true
-
+  
   try {
-    await shipmentStore.fetchShipmentData(USER_ID, trackingInput.value.trim())
+    await Promise.all([
+      shipmentStore.fetchShipmentData(USER_ID, trackingInput.value.trim()),
+      trackStore.fetchTrackingData(docPath)
+    ])
     
-    if (!shipmentStore.shipmentData) {
+    if (!shipmentData.value) {
       error.value = 'No shipment found with this tracking number.'
-      shipmentStore.$reset() // Clear any partial data
     }
   } catch (e) {
-    error.value = 'Error fetching shipment data. Please try again.'
-    shipmentStore.$reset() // Clear any partial data
+    error.value = 'Unable to fetch shipment data. Please try again later.'
     console.error('Shipment fetch error:', e)
   } finally {
     isLoading.value = false
   }
 }
+
+function clearData() {
+  shipmentStore.$reset()
+  trackStore.$reset()
+  showingShipments.value = false
+  error.value = ''
+}
+
+// Cleanup and initialization
+onMounted(() => {
+  // Clean up any stale data
+  clearData()
+})
+
+// Watch for store errors
+watchEffect(() => {
+  if (trackStore.error) {
+    error.value = trackStore.error
+  }
+})
 </script>
 
 <style scoped>
-/* Add any component-specific styles here */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(-30px);
+}
 </style>
