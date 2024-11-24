@@ -75,7 +75,7 @@
       </div>
     </section>
 
-    <section aria-label="Tracking timeline" class="w-full max-w-7xl mx-auto px-4">
+    <section aria-label="Tracking timeline" class="w-4/5 max-w-7xl mx-auto px-4">
       <TransitionGroup 
         name="list"
         tag="div"
@@ -105,17 +105,6 @@ import StatusTrack from '@/components/widgets/track-comps/StatusTrack.vue'
 import FooterView from '@/components/widgets/singles/FooterView.vue'
 import { useFirebaseStore } from '@/stores/firebaseStore'
 
-const store = useFirebaseStore();
-const user = computed(() => store.user);
-const isLoggedIn = computed(() => user.value && user.value.uid !== '');
-
-// Constants
-const USER_ID = user.value ? user.value.uid : null;
-
-const docPath = '/Users/Id2ZY2f1xEepqCp9CcnFcQ79gFi2/Shipments/Id2ZY2f1xEepqCp9CcnFcQ79gFi2/Tracking/12345678/';
-
-const TRACKING_NUMBER_REGEX = /^[A-Z0-9]{6,}$/i
-
 // State management
 const trackingInput = ref('')
 const isLoading = ref(false)
@@ -125,10 +114,28 @@ const showingShipments = ref(false)
 // Store initialization
 const shipmentStore = useShipmentStore()
 const trackStore = useTrackStore()
+const firebaseStore = useFirebaseStore()
 
 // Computed properties
+const user = computed(() => firebaseStore.user)
+const isLoggedIn = computed(() => user.value?.uid)
+
+// Build document path only when we have both a user and tracking number
+const docPath = computed(() => {
+  const userId = user.value?.uid
+  const trackingNum = trackingInput.value.trim()
+  
+  if (!userId || !trackingNum) {
+    return null
+  }
+  
+  return `/Users/${userId}/Shipments/${userId}/Tracking/${trackingNum}`
+})
+
+const TRACKING_NUMBER_REGEX = /^[A-Z0-9]{6,}$/i
+
 const backgroundImageStyle = computed(() => ({
-  backgroundImage: 'url("/images/shipping-port-optimized.jpg")',
+  backgroundImage: 'url("https://img.freepik.com/free-photo/busy-shipping-port-with-containers-trade-action_91128-4581.jpg")',
   loading: 'lazy'
 }))
 
@@ -138,26 +145,22 @@ const isValidTrackingNumber = computed(() =>
 
 const shipmentData = computed(() => shipmentStore.shipmentData)
 
-
-
 const showNoResultsMessage = computed(() => 
   showingShipments.value && !isLoading.value && !error.value && !shipmentData.value
 )
 
 const sortedTrackingStages = computed(() => {
-  if (!trackStore.content) return [];
+  if (!trackStore.content) return []
   
-  // Define the fixed order of stages
-  const stageOrder = ['packaging', 'transit1', 'transit2', 'delivered'];
+  const stageOrder = ['packaging', 'transit1', 'transit2', 'delivered']
   
   return stageOrder
     .map(key => ({
       key,
       ...(trackStore.content[key] || {}),
     }))
-    .filter(stage => Object.keys(stage).length > 1); // Exclude empty stages
-});
-
+    .filter(stage => Object.keys(stage).length > 1)
+})
 
 // Event handlers
 async function handleSubmit() {
@@ -168,16 +171,24 @@ async function handleSubmit() {
   showingShipments.value = true
   
   try {
+    if (!isLoggedIn.value) {
+      throw new Error('Please log in to track shipments')
+    }
+
+    if (!docPath.value) {
+      throw new Error('Invalid tracking information')
+    }
+
     await Promise.all([
-      shipmentStore.fetchShipmentData(USER_ID, trackingInput.value.trim()),
-      trackStore.fetchTrackingData(docPath)
+      shipmentStore.fetchShipmentData(user.value.uid, trackingInput.value.trim()),
+      trackStore.fetchTrackingData(docPath.value)
     ])
     
     if (!shipmentData.value) {
       error.value = 'No shipment found with this tracking number.'
     }
   } catch (e) {
-    error.value = 'Unable to fetch shipment data. Please try again later.'
+    error.value = e instanceof Error ? e.message : 'Unable to fetch shipment data. Please try again later.'
     console.error('Shipment fetch error:', e)
   } finally {
     isLoading.value = false
@@ -193,7 +204,6 @@ function clearData() {
 
 // Cleanup and initialization
 onMounted(() => {
-  // Clean up any stale data
   clearData()
 })
 
