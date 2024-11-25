@@ -38,7 +38,7 @@
             </div>
         </div>
         </div>
-        <div class="w-full p-4 flex justify-evenly bg-bgcolor text-white">
+        <div class="w-full p-4 flex justify-evenly bg-gradient-to-r from-slate-500 to-slate-900 text-white">
             <div>
                 <h1 className="text-4xl">
             Global<span className="font-extrabold text-slate-900">Envoy</span>

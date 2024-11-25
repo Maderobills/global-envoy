@@ -1,3 +1,6 @@
+<script setup>
+const Image1 = "https://img.freepik.com/free-photo/vehicles-laptop-supply-chain-representation_23-2149853161.jpg?"
+</script>
 <template>
    <main class="h-screen w-4/5 overflow-hidden overflow-y-auto justify-self-center">
     <div class="pt-10">
@@ -29,7 +32,7 @@
       </div>
   
       <div class="md:w-1/3 mt-6 md:mt-0 md:ml-8">
-        <img src="https://img.freepik.com/free-photo/vehicles-laptop-supply-chain-representation_23-2149853161.jpg?" alt="Speedaf Truck" class="rounded-lg shadow-md">
+        <img :src="Image1" alt="Speedaf Truck" class="rounded-lg shadow-md">
       </div>
     </div>
   </section>
