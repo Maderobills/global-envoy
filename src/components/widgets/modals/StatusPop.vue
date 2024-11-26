@@ -3,13 +3,19 @@
       <div class="modal-content">
         <h2>Tracking Number: {{ trackingNum }}</h2>
         <p>User UID: {{ uid }}</p>
+
+        <main>
+            <StatusForm :uid="uid" :trackingNum="trackingNum"/>
+        </main>
         <button @click="close">Close</button>
+
       </div>
     </div>
   </template>
   
   <script setup lang="ts">
   import { defineProps, defineEmits } from 'vue';
+  import StatusForm from '../forms/StatusForm.vue';
   
   const props = defineProps({
     uid: String,
