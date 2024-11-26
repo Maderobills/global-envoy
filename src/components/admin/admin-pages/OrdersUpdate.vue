@@ -1,7 +1,7 @@
 <template>
     <div class="h-4/5 bg-slate-100 flex flex-col rounded-lg">
       <div class="flex justify-between items-center mx-6 my-4">
-        <h1 class="text-3xl font-bold text-slate-900">Orders</h1>
+        <h1 class="text-3xl font-bold text-slate-900">Update Orders</h1>
         <button
           @click="refreshUsers"
           :disabled="loading"

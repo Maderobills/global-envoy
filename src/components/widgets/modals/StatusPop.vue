@@ -1,9 +1,6 @@
 <template>
     <div class="modal-overlay">
       <div class="modal-content">
-        <h2>Tracking Number: {{ trackingNum }}</h2>
-        <p>User UID: {{ uid }}</p>
-
         <main>
             <StatusForm :uid="uid" :trackingNum="trackingNum"/>
         </main>
@@ -13,9 +10,9 @@
     </div>
   </template>
   
-  <script setup lang="ts">
+  <script setup>
   import { defineProps, defineEmits } from 'vue';
-  import StatusForm from '../forms/StatusForm.vue';
+  import StatusForm from '../forms/StatusFormUpdate.vue';
   
   const props = defineProps({
     uid: String,
@@ -27,6 +24,7 @@
   const close = () => {
     emit('close');
   };
+  
   </script>
   
   <style scoped>
@@ -48,4 +46,5 @@
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
+
   </style>

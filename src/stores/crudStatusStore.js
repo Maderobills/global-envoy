@@ -1,175 +1,81 @@
-// stores/statusUpdateStore.js
-import { defineStore } from 'pinia'
-import { 
-  getDatabase, 
-  ref as dbRef, 
-  push, 
-  set, 
-  get,
-  query,
-  orderByChild
-} from 'firebase/database'
+import { defineStore } from 'pinia';
+import { getDoc, doc, setDoc, updateDoc, getFirestore } from 'firebase/firestore';
+import { firebaseApp } from '@/firebase';
 
-export const useStatusUpdateStore = defineStore('statusUpdate', {
+// Initialize Firestore
+const db = getFirestore(firebaseApp);
+
+export const useTrackStore = defineStore('trackStore', {
   state: () => ({
-    trackingUpdates: {},
+    content: null,
+    packageId: null,
     loading: false,
-    error: null
+    error: null,
   }),
-
   actions: {
-    /**
-     * Creates a new status update for a shipment
-     * @param {string} userId - The user ID
-     * @param {string} trackingNum - The tracking number
-     * @param {Object} statusData - The status update data
-     */
-    async createStatusUpdate(userId, trackingNum, statusData) {
-      this.loading = true
-      this.error = null
-      
+    async fetchTrackingData(docPath) {
+      this.loading = true;
+      this.error = null;
+
+      const docRef = doc(db, docPath);
+
       try {
-        const db = getDatabase()
-        const updatePath = `/Users/${userId}/Shipments/${trackingNum}/Tracking/${trackingNum}`
-        const trackingRef = dbRef(db, updatePath)
-        
-        const newUpdate = {
-          transitType: statusData.transitType,
-          location: statusData.location || '',
-          date: statusData.date || '',
-          note: statusData.note || '',
-          status: statusData.status || '',
-          timestamp: new Date().toISOString()
+        const docSnap = await getDoc(docRef);
+
+        if (!docSnap.exists()) {
+          throw new Error('No such document!');
         }
 
-        // Add to existing updates array or create new one
-        await push(trackingRef, newUpdate)
+        // Fetch and set the data
+        const data = docSnap.data();
+        this.content = data;
+        this.packageId = data.PackageDetails?.packageId || null; // Optional chaining
 
-        // Update local state
-        if (!this.trackingUpdates[trackingNum]) {
-          this.trackingUpdates[trackingNum] = []
-        }
-        this.trackingUpdates[trackingNum].push(newUpdate)
-
+        console.log('Fetched data:', data); // Log the fetched data
       } catch (err) {
-        this.error = err.message
-        throw err
+        this.error = err.message || 'An error occurred while fetching tracking data.';
+        console.error('Error fetching tracking data:', err);
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
+    async updateTrackingData(docPath, updateData) {
+      this.loading = true;
+      this.error = null;
 
-    /**
-     * Fetches all status updates for a tracking number
-     * @param {string} userId - The user ID
-     * @param {string} trackingNum - The tracking number
-     */
-    async fetchStatusUpdates(userId, trackingNum) {
-      this.loading = true
-      this.error = null
+      const docRef = doc(db, docPath);
 
       try {
-        const db = getDatabase()
-        const updatePath = `/Users/${userId}/Shipments/${trackingNum}/Tracking/${trackingNum}`
-        const trackingRef = dbRef(db, updatePath)
-        
-        const snapshot = await get(query(trackingRef, orderByChild('timestamp')))
-        
-        if (snapshot.exists()) {
-          const updates = []
-          snapshot.forEach((childSnapshot) => {
-            updates.push({
-              id: childSnapshot.key,
-              ...childSnapshot.val()
-            })
-          })
-          this.trackingUpdates[trackingNum] = updates
-        } else {
-          this.trackingUpdates[trackingNum] = []
-        }
+        await updateDoc(docRef, updateData);
+        console.log('Document updated:', updateData);
 
-        return this.trackingUpdates[trackingNum]
-
+        // Optionally fetch the updated data
+        await this.fetchTrackingData(docPath);
       } catch (err) {
-        this.error = err.message
-        throw err
+        this.error = err.message || 'An error occurred while updating tracking data.';
+        console.error('Error updating tracking data:', err);
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
+    async setTrackingData(docPath, newData) {
+      this.loading = true;
+      this.error = null;
 
-    /**
-     * Updates an existing status update
-     * @param {string} userId - The user ID
-     * @param {string} trackingNum - The tracking number
-     * @param {string} updateId - The update ID to modify
-     * @param {Object} statusData - The new status data
-     */
-    async updateStatus(userId, trackingNum, updateId, statusData) {
-      this.loading = true
-      this.error = null
+      const docRef = doc(db, docPath);
 
       try {
-        const db = getDatabase()
-        const updatePath = `/Users/${userId}/Shipments/${trackingNum}/Tracking/${trackingNum}/${updateId}`
-        const updateRef = dbRef(db, updatePath)
+        await setDoc(docRef, newData);
+        console.log('Document set:', newData);
 
-        const updatedData = {
-          transitType: statusData.transitType,
-          location: statusData.location || '',
-          date: statusData.date || '',
-          note: statusData.note || '',
-          status: statusData.status || '',
-          timestamp: new Date().toISOString()
-        }
-
-        await set(updateRef, updatedData)
-
-        // Update local state
-        const updateIndex = this.trackingUpdates[trackingNum]?.findIndex(
-          update => update.id === updateId
-        )
-        
-        if (updateIndex !== -1) {
-          this.trackingUpdates[trackingNum][updateIndex] = {
-            id: updateId,
-            ...updatedData
-          }
-        }
-
+        // Optionally fetch the newly set data
+        await this.fetchTrackingData(docPath);
       } catch (err) {
-        this.error = err.message
-        throw err
+        this.error = err.message || 'An error occurred while setting tracking data.';
+        console.error('Error setting tracking data:', err);
       } finally {
-        this.loading = false
+        this.loading = false;
       }
-    }
+    },
   },
-
-  getters: {
-    /**
-     * Get all updates for a specific tracking number
-     */
-    getUpdatesByTracking: (state) => (trackingNum) => {
-      return state.trackingUpdates[trackingNum] || []
-    },
-
-    /**
-     * Get the latest status update for a tracking number
-     */
-    getLatestUpdate: (state) => (trackingNum) => {
-      const updates = state.trackingUpdates[trackingNum] || []
-      return updates.length ? updates[updates.length - 1] : null
-    },
-
-    /**
-     * Get loading state
-     */
-    isLoading: (state) => state.loading,
-
-    /**
-     * Get error state
-     */
-    getError: (state) => state.error
-  }
-})
+});
