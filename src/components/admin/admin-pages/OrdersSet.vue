@@ -91,7 +91,7 @@
   import { onMounted, onUnmounted, ref } from 'vue';
   import Username from '@/components/widgets/singles/Username.vue';
   import { useDataUsersStore } from '@/stores/usernameStore';
-  import StatusPop from '@/components/widgets/modals/StatusPop.vue';
+  import StatusPop from '@/components/widgets/modals/StatusPopSet.vue';
   import { storeToRefs } from 'pinia';
   
   // Access the Pinia store

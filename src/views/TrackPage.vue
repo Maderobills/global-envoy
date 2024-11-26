@@ -38,7 +38,7 @@
     </div>
 
     <!-- Results section with improved error handling and loading states -->
-    <section class="flex-1 w-full max-w-7xl mx-auto px-4 py-8 space-y-6" aria-live="polite">
+    <section class="w-4/5 max-w-7xl mx-auto px-4 pt-8 space-y-6 my-5" aria-live="polite">
       <div 
         v-if="error" 
         id="error-message"
@@ -75,7 +75,7 @@
       </div>
     </section>
 
-    <section aria-label="Tracking timeline" class="w-4/5 max-w-7xl mx-auto px-4">
+    <section aria-label="Tracking timeline" class="w-4/5 max-w-7xl mx-auto px-10 my-5">
       <TransitionGroup 
         name="list"
         tag="div"
@@ -87,7 +87,7 @@
           :location="status.location"
           :note="status.note"
           :status="status.status"
-          :time="status.time"
+          :date="status.date"
         />
       </TransitionGroup>
     </section>

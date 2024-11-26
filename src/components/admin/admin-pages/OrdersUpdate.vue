@@ -78,7 +78,7 @@
         
       </main>
 <!-- Modal for Tracking Number Details -->
-<StatusPop 
+<StatusPopUpdate 
       v-if="isModalVisible" 
       :uid="modalUid" 
       :trackingNum="modalTrackingNum" 
@@ -91,9 +91,9 @@
   import { onMounted, onUnmounted, ref } from 'vue';
   import Username from '@/components/widgets/singles/Username.vue';
   import { useDataUsersStore } from '@/stores/usernameStore';
-  import StatusPop from '@/components/widgets/modals/StatusPop.vue';
   import { storeToRefs } from 'pinia';
-  
+import StatusPopUpdate from '@/components/widgets/modals/StatusPopUpdate.vue';
+
   // Access the Pinia store
   const dataUsersStore = useDataUsersStore();
   const { users, loading, error } = storeToRefs(dataUsersStore);

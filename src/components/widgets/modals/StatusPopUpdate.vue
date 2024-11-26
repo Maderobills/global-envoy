@@ -11,8 +11,8 @@
   </template>
   
   <script setup>
-  import { defineProps, defineEmits } from 'vue';
-  import StatusForm from '../forms/StatusFormUpdate.vue';
+import { defineProps, defineEmits, defineOptions } from 'vue';
+import StatusForm from '../forms/StatusFormUpdate.vue';
   
   const props = defineProps({
     uid: String,
@@ -24,7 +24,9 @@
   const close = () => {
     emit('close');
   };
-  
+  defineOptions({
+  name: 'StatusPopUpdate'
+});
   </script>
   
   <style scoped>
