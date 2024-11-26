@@ -127,7 +127,7 @@ const docPath = computed(() => {
     return null
   }
   
-  return `/Users/${userId}/Shipments/${userId}/Tracking/${trackingNum}`
+  return `/Users/${userId}/Shipments/${trackingNum}/Tracking/${trackingNum}`
 })
 
 const TRACKING_NUMBER_REGEX = /^[A-Z0-9]{6,}$/i
