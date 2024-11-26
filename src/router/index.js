@@ -1,3 +1,4 @@
+import Users from '@/components/admin/admin-pages/Users.vue'
 import AdminHome from '@/components/admin/AdminHome.vue'
 import TestMe from '@/components/test/TestMe.vue'
 import ForgotPassword from '@/components/widgets/singles/auth-pages/ForgotPassword.vue'

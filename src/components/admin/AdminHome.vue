@@ -1,34 +1,34 @@
 <template>
-    <main class="flex">
-        <div class="h-[calc(100vh-140px)] w-64 bg-slate-900 rounded-md m-4 shadow-2xl text-white p-4 ">
-        <div>
-            <h1 className="text-2xl">
-            Global<span className="font-extrabold text-emerald-600">Envoy</span>
-          </h1>
-          <p class="text-slate-400">Adminstrator Portal</p>
-        </div>
-        <hr class="border-gray-500 my-2">
-        <div>
-          <RouterLink>
-            <span>Oders</span>
-          </RouterLink>
-          <RouterLink>
-            <span>Tracking</span>
-          </RouterLink>
-        </div>
-    </div>
-    <div>
-    <h1>Firebase is {{ firebaseStore.isInitialized ? 'Initialized' : 'Not Initialized' }}</h1>
-  </div>
+  <section class="flex h-screen">
+    <aside class="flex flex-col space-y-4 w-56 h-full p-6 bg-gradient-to-t from-slate-800 to-slate-900 text-white">
+      <a href="#/users">Users</a> 
+      <a href="#/orders">Orders</a>
+
+    </aside>
+    <main class="w-full p-6">
+      <component :is="currentView" />
     </main>
+  </section>
 </template>
+
+
 <script setup>
-import { useFirebaseStore } from '@/stores/firebaseStore';
+import { ref, computed } from 'vue'
+import Users from './admin-pages/Users.vue';
+import Orders from './admin-pages/Orders.vue';
 
+const routes = {
+  '/users': Users,
+  '/orders': Orders,
+}
 
-const firebaseStore = useFirebaseStore();
+const currentPath = ref(window.location.hash)
 
-// Access the Firebase app
-const firebaseApp = firebaseStore.getFirebaseApp();
-console.log(firebaseApp);
+window.addEventListener('hashchange', () => {
+  currentPath.value = window.location.hash
+})
+
+const currentView = computed(() => {
+  return routes[currentPath.value.slice(1) || '/users'] || NotFound
+})
 </script>
