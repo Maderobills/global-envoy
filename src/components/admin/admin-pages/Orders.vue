@@ -58,31 +58,50 @@
             </TransitionGroup>
           </div>
         </aside>
+  
         <section class="mx-6 my-4">
-          <div v-if="selectedUser">
-            <h4 class="font-bold">User UID: {{ selectedUser.uid }}</h4>
-            <h4 class="font-bold">Tracking Numbers:</h4>
-            <ul>
-              <li v-for="(tracking, index) in selectedUser.trackingNumbers" :key="index">{{ tracking }}</li>
-            </ul>
-          </div>
-          <div>
-            
-          </div>
+            <div v-if="selectedUser">
+          <h4 class="font-bold">User UID: {{ selectedUser.uid }}</h4>
+          <h4 class="font-bold">Tracking Numbers:</h4>
+          <ul>
+            <li 
+              v-for="(tracking, index) in selectedUser.trackingNumbers" 
+              :key="index"
+              class="cursor-pointer text-blue-500 hover:underline"
+              @click="showModal(selectedUser.uid, tracking)"
+            >
+              {{ tracking }}
+            </li>
+          </ul>
+        </div>
         </section>
+        
       </main>
+<!-- Modal for Tracking Number Details -->
+<StatusPop 
+      v-if="isModalVisible" 
+      :uid="modalUid" 
+      :trackingNum="modalTrackingNum" 
+      @close="isModalVisible = false"
+    />
     </div>
   </template>
+  
   <script setup lang="ts">
   import { onMounted, onUnmounted, ref } from 'vue';
   import Username from '@/components/widgets/singles/Username.vue';
   import { useDataUsersStore } from '@/stores/usernameStore';
+  import StatusPop from '@/components/widgets/modals/StatusPop.vue';
   import { storeToRefs } from 'pinia';
   
   // Access the Pinia store
   const dataUsersStore = useDataUsersStore();
   const { users, loading, error } = storeToRefs(dataUsersStore);
   const { fetchUsers } = dataUsersStore;
+  
+  const isModalVisible = ref(false);
+  const modalUid = ref('');
+  const modalTrackingNum = ref('');
   
   // Reactive reference for the selected user
   const selectedUser = ref(null);
@@ -116,5 +135,11 @@
   const handleUserClick = (user) => {
     console.log(`User clicked:`, user);
     selectedUser.value = user; // Set the selected user
+  };
+  
+  const showModal = (uid: string, trackingNum: string) => {
+    modalUid.value = uid;
+    modalTrackingNum.value = trackingNum;
+    isModalVisible.value = true;
   };
   </script>
