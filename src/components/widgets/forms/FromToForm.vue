@@ -1,8 +1,12 @@
 <template>
   <div class="space-y-6">
     <!-- From Destination -->
-    <div>
-      <label class="block text-sm font-medium mb-2">From (City)</label>
+    <div class="space-y-2">
+      <h1 class="text-lg text-emerald-600 font-semibold">From Destination</h1>
+
+    <div class="flex justify-between">
+      <div>
+        <label class="block text-sm font-medium mb-2">From (City)</label>
       <input 
         v-model="formData.fromCity" 
         type="text" 
@@ -10,7 +14,9 @@
         class="w-full p-3 border outline-emerald-600 rounded" 
         required
       />
-      <label class="block text-sm font-medium mb-2">Country</label>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-2">Country</label>
       <input 
         v-model="formData.fromCountry" 
         type="text" 
@@ -18,7 +24,9 @@
         class="w-full p-3 border outline-emerald-600 rounded" 
         required
       />
-      <label class="block text-sm font-medium mb-2">Zip Code</label>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-2">Zip Code</label>
       <input 
         v-model="formData.fromZipCode" 
         type="text" 
@@ -26,11 +34,17 @@
         class="w-full p-3 border outline-emerald-600 rounded" 
         required
       />
+      </div>
     </div>
 
+    </div>
     <!-- To Destination -->
-    <div>
-      <label class="block text-sm font-medium mb-2">To (City)</label>
+    <div class="space-y-2">
+      <h1 class="text-lg text-emerald-600 font-semibold">To Destination</h1>
+
+    <div class="flex justify-between">
+      <div>
+        <label class="block text-sm font-medium mb-2">To (City)</label>
       <input 
         v-model="formData.toCity" 
         type="text" 
@@ -38,7 +52,9 @@
         class="w-full p-3 border outline-emerald-600 rounded" 
         required
       />
-      <label class="block text-sm font-medium mb-2">Country</label>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-2">Country</label>
       <input 
         v-model="formData.toCountry" 
         type="text" 
@@ -46,7 +62,9 @@
         class="w-full p-3 border outline-emerald-600 rounded" 
         required
       />
-      <label class="block text-sm font-medium mb-2">Zip Code</label>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-2">Zip Code</label>
       <input 
         v-model="formData.toZipCode" 
         type="text" 
@@ -54,6 +72,8 @@
         class="w-full p-3 border outline-emerald-600 rounded" 
         required
       />
+      </div>
+    </div>
     </div>
   </div>
 </template>
