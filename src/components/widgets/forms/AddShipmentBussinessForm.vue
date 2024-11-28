@@ -47,8 +47,8 @@
   const steps = [
   { title: 'Origin and Destination', icon: 'fi fi-tr-location-arrow' },
     { title: 'Package Details', icon: 'fi fi-tr-box-open' },
-    { title: 'Additional Info', icon: 'Info' },
-    { title: 'Payment', icon: 'CreditCard' }
+    { title: 'Additional Info', icon: 'fi fi-tr-layer-plus' },
+    { title: 'Payment', icon: 'fi fi-tr-selling' }
   ]
   
   const currentComponent = computed(() => {

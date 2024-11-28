@@ -8,7 +8,7 @@
         class="flex flex-col items-center cursor-pointer w-1/4"
         :class="currentStep === index ? 'text-slate-900' : 'text-gray-500'"
         @click="currentStep = index">
-        <component :is="step.icon" class="w-8 h-8 mb-2" />
+        <i class="w-10 h-8 text-2xl" :class="step.icon"></i>
         <span class="text-sm font-medium">{{ step.title }}</span>
         <div class="h-1 w-full mt-2" :class="currentStep === index ? 'bg-bgslate' : 'bg-gray-200'" />
       </div>
@@ -38,19 +38,21 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import FromToForm from './FromToForm.vue';
 import PackageForm from './PackageForm.vue';
 import AdditionalDetails from './AdditionalDetails.vue';
 import PaymentForm from './PaymentForm.vue';
 const currentStep = ref(0)
 
 const steps = [
-  { title: 'Package Details', icon: 'Package' },
-  { title: 'Additional Info', icon: 'Info' },
-  { title: 'Payment', icon: 'CreditCard' }
+{ title: 'Origin and Destination', icon: 'fi fi-tr-location-arrow' },
+  { title: 'Package Details', icon: 'fi fi-tr-box-open' },
+  { title: 'Additional Info', icon: 'fi fi-tr-layer-plus' },
+  { title: 'Payment', icon: 'fi fi-tr-selling' }
 ]
 
 const currentComponent = computed(() => {
-  const components = [PackageForm, AdditionalDetails, PaymentForm]
+  const components = [FromToForm, PackageForm, AdditionalDetails, PaymentForm]
   return components[currentStep.value]
 })
 
