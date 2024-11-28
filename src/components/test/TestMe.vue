@@ -1,75 +1,270 @@
+
+
 <template>
-  <div>
-    <h1>Tracking Information</h1>
-    <button @click="fetchTrackingData">Fetch Tracking Data</button>
-
-    <div v-if="loading">Loading...</div>
-    <div v-if="error">{{ error }}</div>
-    <div v-if="content">
-      <h2>Package ID: {{ content.PackageDetails?.packageId }}</h2>
-      <p>Content: {{ content.PackageDetails?.content }}</p>
-
-      <h3>Package Details</h3>
-      <div>
-        <StatusTrack
-          v-for="(status, key) in trackingStages"
-          :key="key"
-          :location="status.location"
-          :note="status.note"
-          :status="status.status"
-          :time="status.time"
-        />
+  <div class="shipping-quote-form">
+    <h2>Get Shipping Quote</h2>
+    
+    <form @submit.prevent="handleSubmit" class="form">
+      <!-- From Address Section -->
+      <div class="form-section">
+        <h3>From Address</h3>
+        <div class="form-group">
+          <label for="fromCountry">From Country:</label>
+          <select 
+            id="fromCountry"
+            v-model="formData.fromCountry"
+            required
+          >
+            <option value="">Select Country</option>
+            <option 
+              v-for="country in shipping.countries" 
+              :key="country.code"
+              :value="country.code"
+            >
+              {{ country.name }}
+            </option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="fromPostalCode">From Postal Code:</label>
+          <input
+            id="fromPostalCode"
+            v-model="formData.fromPostalCode"
+            type="text"
+            required
+          />
+        </div>
       </div>
+
+      <!-- To Address Section -->
+      <div class="form-section">
+        <h3>To Address</h3>
+        <div class="form-group">
+          <label for="toCountry">To Country:</label>
+          <select 
+            id="toCountry"
+            v-model="formData.toCountry"
+            required
+          >
+            <option value="">Select Country</option>
+            <option 
+              v-for="country in shipping.countries" 
+              :key="country.code"
+              :value="country.code"
+            >
+              {{ country.name }}
+            </option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="toPostalCode">To Postal Code:</label>
+          <input
+            id="toPostalCode"
+            v-model="formData.toPostalCode"
+            type="text"
+            required
+          />
+        </div>
+      </div>
+
+      <!-- Package Details Section -->
+      <div class="form-section">
+        <h3>Package Details</h3>
+        <div class="form-group">
+          <label for="packageType">Package Type:</label>
+          <select 
+            id="packageType"
+            v-model="formData.packageType"
+            required
+          >
+            <option value="">Select Package Type</option>
+            <option 
+              v-for="type in shipping.packageTypes" 
+              :key="type.id"
+              :value="type.id"
+            >
+              {{ type.name }}
+            </option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="weight">Weight:</label>
+          <div class="weight-input">
+            <input
+              id="weight"
+              v-model.number="formData.weight"
+              type="number"
+              required
+              min="0"
+              step="0.1"
+            />
+            <select v-model="formData.weightUnit">
+              <option value="OUNCE">Ounces</option>
+              <option value="POUND">Pounds</option>
+              <option value="KILOGRAM">Kilograms</option>
+              <option value="GRAM">Grams</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <button type="submit" :disabled="shipping.loading">
+        {{ shipping.loading ? 'Getting Quote...' : 'Get Quote' }}
+      </button>
+    </form>
+    
+    <div v-if="shipping.error" class="error">
+      {{ shipping.error }}
+    </div>
+    
+    <div v-if="shipping.quote" class="quote-result">
+      <h3>Shipping Quote Result</h3>
+      <pre>{{ JSON.stringify(shipping.quote, null, 2) }}</pre>
     </div>
   </div>
 </template>
 
 <script setup>
-import { useTrackStore } from '@/stores/statusStore';
-import StatusTrack from '../widgets/track-comps/StatusTrack.vue';
-import { computed } from 'vue';
+import { useShippingStore } from '@/stores/getQuoteStore';
+import { ref } from 'vue'
 
-// Access the Pinia store
-const trackStore = useTrackStore();
-const { content, loading, error, fetchTrackingData } = trackStore;
+const shipping = useShippingStore()
 
-// Define the document path
-const docPath = '/Users/Id2ZY2f1xEepqCp9CcnFcQ79gFi2/Shipments/Id2ZY2f1xEepqCp9CcnFcQ79gFi2/Tracking/12345678/';
+const formData = ref({
+  fromCountry: '',
+  fromPostalCode: '',
+  toCountry: '',
+  toPostalCode: '',
+  packageType: '',
+  weight: null,
+  weightUnit: 'OUNCE'
+})
 
-// Fetch tracking data
-const fetchTrackingDataHandler = async () => {
-  await fetchTrackingData(docPath);
-  console.log('Fetched content:', content); // Log the fetched content
-};
+const convertWeight = (weight, unit) => {
+  switch (unit) {
+    case 'POUND':
+      return weight * 16 // Convert to ounces
+    case 'KILOGRAM':
+      return weight * 35.274 // Convert to ounces
+    case 'GRAM':
+      return weight * 0.035274 // Convert to ounces
+    default:
+      return weight
+  }
+}
 
-// Dynamically map the tracking stages
-const trackingStages = computed(() => {
-  if (!content) return [];
-  return ['delivered', 'packaging', 'transit1', 'transit2'].map(key => ({
-    key,
-    ...(content[key] || {}) // Spread operator with fallback
-  }));
-});
+const handleSubmit = () => {
+  const weightInOunces = convertWeight(formData.value.weight, formData.value.weightUnit)
+  
+  const shippingDetails = {
+    rateRequest: {
+      pickupAddress: {
+        postalCode: formData.value.fromPostalCode,
+        countryCode: formData.value.fromCountry
+      },
+      deliveryAddress: {
+        postalCode: formData.value.toPostalCode,
+        countryCode: formData.value.toCountry
+      },
+      packageSpecifics: [{
+        packageType: formData.value.packageType,
+        weightInOunces
+      }]
+    }
+  }
+  
+  shipping.fetchShippingQuote(shippingDetails)
+}
 </script>
 
 <style scoped>
-h1 {
-  font-size: 2em;
+.shipping-quote-form {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   margin-bottom: 20px;
 }
-h2, h3 {
-  margin-top: 15px;
+
+.form-section {
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 4px;
+  background-color: #f9f9f9;
 }
+
+.form-section h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+input, select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.weight-input {
+  display: flex;
+  gap: 10px;
+}
+
+.weight-input input {
+  flex: 1;
+}
+
+.weight-input select {
+  width: 120px;
+}
+
 button {
-  margin-bottom: 20px;
-  padding: 10px 15px;
-  background-color: #007bff;
+  padding: 12px;
+  background-color: #4CAF50;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
+  font-size: 16px;
 }
-button:hover {
-  background-color: #0056b3;
+
+button:disabled {
+  background-color: #cccccc;
+}
+
+.error {
+  color: red;
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #fff2f2;
+  border-radius: 4px;
+}
+
+.quote-result {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.quote-result pre {
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 </style>
