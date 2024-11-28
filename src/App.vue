@@ -43,11 +43,11 @@ const isLoggedIn = computed(() => store.user.firstName !== 'Guest');
         </div>
 
         <div class="relative group">
-          <RouterLink to="/ship" class="flex items-baseline space-x-2">
+          <RouterLink to="/create-shipment" class="flex items-baseline space-x-2">
             <i class="fi fi-tr-box-open"></i><span>Ship</span>
           </RouterLink>
           <div class="absolute hidden group-hover:block bg-white shadow-lg mt-0 rounded">
-            <RouterLink to="/ship1" class="block px-4 py-2 hover:bg-gray-200">Create Shipment</RouterLink>
+            <RouterLink to="/create-shipment" class="block px-4 py-2 hover:bg-gray-200">Create Shipment</RouterLink>
             <RouterLink to="/ship2" class="block px-4 py-2 hover:bg-gray-200">Shipping Rates</RouterLink>
           </div>
         </div>
