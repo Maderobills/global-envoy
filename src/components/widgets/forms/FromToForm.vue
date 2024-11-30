@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <!-- From Destination -->
     <div class="space-y-2">
-      <h1 class="text-lg text-emerald-600 font-semibold">From Destination</h1>
+      <h1 class="text-lg text-emerald-600 font-semibold">From Origin</h1>
 
       <div class="flex justify-between gap-4">
         <div class="flex-1">
@@ -20,14 +20,17 @@
 
         <div class="flex-1">
           <label class="block text-sm font-medium mb-2">Country</label>
-          <input 
-            v-model="store.formData.fromCountry" 
-            type="text" 
-            placeholder="Enter Origin Country" 
+          <select
+            v-model="store.formData.fromCountry"
             :class="['w-full p-3 border rounded', store.errors.fromCountry ? 'border-red-500' : 'outline-emerald-600']"
             @blur="store.validateField('fromCountry')"
             required
-          />
+          >
+            <option value="">Select Country</option>
+            <option v-for="country in countries" :key="country" :value="country">
+              {{ country }}
+            </option>
+          </select>
           <p v-if="store.errors.fromCountry" class="text-red-500 text-sm mt-1">{{ store.errors.fromCountry }}</p>
         </div>
 
@@ -63,14 +66,17 @@
 
         <div class="flex-1">
           <label class="block text-sm font-medium mb-2">Country</label>
-          <input 
-            v-model="store.formData.toCountry" 
-            type="text" 
-            placeholder="Enter Destination Country" 
+          <select
+            v-model="store.formData.toCountry"
             :class="['w-full p-3 border rounded', store.errors.toCountry ? 'border-red-500' : 'outline-emerald-600']"
             @blur="store.validateField('toCountry')"
             required
-          />
+          >
+            <option value="">Select Country</option>
+            <option v-for="country in countries" :key="country" :value="country">
+              {{ country }}
+            </option>
+          </select>
           <p v-if="store.errors.toCountry" class="text-red-500 text-sm mt-1">{{ store.errors.toCountry }}</p>
         </div>
 
@@ -87,10 +93,9 @@
     </div>
 
     <div class="flex gap-4">
-      
       <button 
         @click="store.resetForm"
-        class=" bg-gray-500 text-white py-3 px-6 rounded hover:bg-gray-600 transition-colors"
+        class="bg-gray-500 text-white py-3 px-6 rounded hover:bg-gray-600 transition-colors"
       >
         Reset
       </button>
@@ -100,16 +105,9 @@
 
 <script setup>
 import { useDestinationStore } from '@/stores/destinationStore';
+import { countries } from '@/stores/countries'; // Import the countries list
 
-
-const store = useDestinationStore()
-
-const handleSubmit = () => {
-  if (store.submitForm()) {
-    // Handle successful submission
-    // e.g., navigate to next page or show success message
-  }
-}
+const store = useDestinationStore();
 </script>
 
 <style scoped>

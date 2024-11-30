@@ -1,13 +1,19 @@
 // src/stores/shippingStore.js
-import { defineStore } from 'pinia'
-import axios from 'axios'
+import { defineStore } from 'pinia';
+import axios from 'axios';
+
+// Load environment variables
+const clientId = import.meta.env.VITE_CLIENT_ID;
+const clientSecret = import.meta.env.VITE_CLIENT_SECRET;
+const devId = import.meta.env.VITE_DEV_ID;
+const apiToken = import.meta.env.VITE_API_TOKEN;
 
 export const useShippingStore = defineStore('shipping', {
   state: () => ({
     loading: false,
     error: null,
     quote: null,
-    token: null,
+    token: apiToken, // Use the token from environment variables
     countries: [
       { code: 'US', name: 'United States' },
       { code: 'CA', name: 'Canada' },
@@ -20,31 +26,32 @@ export const useShippingStore = defineStore('shipping', {
       { id: 'LETTER', name: 'Letter' },
       { id: 'LARGE_ENVELOPE', name: 'Large Envelope' },
       { id: 'LARGE_PACKAGE', name: 'Large Package' }
-    ]
+    ],
   }),
-  
+
   actions: {
     async fetchShippingQuote(shippingDetails) {
-      this.loading = true
-      this.error = null
-      
+      this.loading = true;
+      this.error = null;
+
       try {
         const response = await axios.post(
-            '/api/shipping_quote', // Local proxy route
-            shippingDetails,
-            {
-              headers: {
-                Authorization: `Bearer ${this.token}`,
-                'Content-Type': 'application/json',
-              },
-            }
-          );          
-        this.quote = response.data
+          'https://cors-anywhere.herokuapp.com/https://api.ebay.com/sell/logistics/v1_beta/shipping_quote',
+          shippingDetails,
+          {
+            headers: {
+              Authorization: `Bearer ${this.token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        this.quote = response.data;
       } catch (err) {
-        this.error = err.response?.data?.message || 'Failed to fetch shipping quote'
+        console.error('Error response:', err.response); // Log server response
+        this.error = err.response?.data?.message || 'Failed to fetch shipping quote';
       } finally {
-        this.loading = false
+        this.loading = false;
       }
-    }
-  }
-})
+    },
+  },
+});
