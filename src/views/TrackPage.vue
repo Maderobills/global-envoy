@@ -55,8 +55,8 @@
             :package-id="shipmentData.customerId"
             :tracking-number="shipmentData.trackingNumber"
             :delivered-from="shipmentData.destinationAddress"
-            :delivered-to="shipmentData.destinationAddress"
-            :estimated-delivery="shipmentData.deliveryDate"
+            :delivered-to="shipmentData.originAddress"
+            :estimated-delivery="shipmentData.estimateDeliveryDate"
           />
         </template>
         <template #fallback>
@@ -150,7 +150,7 @@ const showNoResultsMessage = computed(() =>
 const sortedTrackingStages = computed(() => {
   if (!trackStore.content) return []
   
-  const stageOrder = ['packaging', 'transit1', 'transit2', 'delivered']
+  const stageOrder = ['pendingPackage','packaging', 'transit1', 'transit2', 'delivered']
   
   return stageOrder
     .map(key => ({
