@@ -1,3 +1,4 @@
+import { createRouter, createWebHistory } from 'vue-router'
 import Users from '@/components/admin/admin-pages/Users.vue'
 import AdminHome from '@/components/admin/AdminHome.vue'
 import TestMe from '@/components/test/TestMe.vue'
@@ -9,7 +10,9 @@ import CreateShipment from '@/views/CreateShipment.vue'
 import CustomerServicePage from '@/views/CustomerServicePage.vue'
 import HomePage from '@/views/HomePage.vue'
 import TrackPage from '@/views/TrackPage.vue'
-import { createRouter, createWebHistory } from 'vue-router'
+
+// Define routes that should preserve form data
+const PRESERVE_STATE_ROUTES = ['CreateShipment', 'SignUp', 'SignIn'];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,16 +36,38 @@ const router = createRouter({
       path: '/create-shipment',
       name: 'CreateShipment',
       component: CreateShipment,
+      beforeEnter: (to, from, next) => {
+        // Load saved state if it exists
+        const savedState = localStorage.getItem(`form_state_${to.name}`);
+        if (savedState) {
+          to.params.savedState = JSON.parse(savedState);
+        }
+        next();
+      }
     },
     {
       path: '/sign-up',
       name: 'SignUp',
       component: SignUp,
+      beforeEnter: (to, from, next) => {
+        const savedState = localStorage.getItem(`form_state_${to.name}`);
+        if (savedState) {
+          to.params.savedState = JSON.parse(savedState);
+        }
+        next();
+      }
     },
     {
       path: '/sign-in',
       name: 'SignIn',
       component: SignIn,
+      beforeEnter: (to, from, next) => {
+        const savedState = localStorage.getItem(`form_state_${to.name}`);
+        if (savedState) {
+          to.params.savedState = JSON.parse(savedState);
+        }
+        next();
+      }
     },
     {
       path: '/forgot-password',
@@ -59,8 +84,6 @@ const router = createRouter({
       name: 'TestMe',
       component: TestMe,
     },
-
-    //ADMIN ROUTES HERE
     {
       path: '/admin',
       name: 'AdminHome',
@@ -68,5 +91,22 @@ const router = createRouter({
     }
   ],
 })
+
+// Save form state before leaving routes
+router.beforeEach((to, from, next) => {
+  if (PRESERVE_STATE_ROUTES.includes(from.name)) {
+    // Get the form state from your Vuex store or component data
+    const formState = window.__VUE_APP_FORM_STATE__;
+    if (formState) {
+      localStorage.setItem(`form_state_${from.name}`, JSON.stringify(formState));
+    }
+  }
+  next();
+});
+
+// Clear saved state when form is submitted successfully
+export const clearSavedFormState = (routeName) => {
+  localStorage.removeItem(`form_state_${routeName}`);
+}
 
 export default router
