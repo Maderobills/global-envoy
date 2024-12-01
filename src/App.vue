@@ -12,9 +12,11 @@ const isLoggedIn = computed(() => store.user.firstName !== 'Guest');
 <template>
   <header class="w-screen h-fit">
     <div class="bg-bgcolor text-white w-full h-14 flex justify-evenly items-center">
-      <h1 class="text-2xl">
+      <RouterLink to="/">
+        <h1 class="text-2xl">
         Global<span class="font-extrabold text-slate-900">Envoy</span>
       </h1>
+      </RouterLink>
       <div class="flex space-x-4 text-sm">
         <div class="h-12 flex justify-center items-center space-x-2 hover:text-slate-900 cursor-pointer">
           <h5>Find a Location</h5>
