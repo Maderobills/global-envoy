@@ -4,11 +4,10 @@
             <div class="space-y-4">
             <h5 class="text-slate-700 font-bold">Quick Links</h5>
             <ul class="space-y-2">
-                <RouterLink to="/about-us"><li>Customer Service</li></RouterLink>
-                <li>Customer Portal Logins</li>
+                <li><RouterLink to="/about-us">Customer Service</RouterLink></li>
+                <li><RouterLink to="sign-in">Customer Portal Logins</RouterLink></li>
                 <li>Digital Partners and Integrations</li>
-                <li>Get a Quote</li>
-                <li>Customer Portal Logins</li>
+                <li><RouterLink to="/get-shipment">Get a Quote</RouterLink></li>
             </ul>
         </div>
         <div class="space-y-4">
@@ -23,7 +22,7 @@
         <div class="space-y-4">
             <h5 class="text-slate-700 font-bold">Company Information</h5>
             <ul class="space-y-2">
-                <li>About Us</li>
+                <RouterLink to="about-us"><li>About Us</li></RouterLink>
                 <li>Careers</li>
                 <li>Privacy Policy</li>
                 <li>Terms and Conditions</li>

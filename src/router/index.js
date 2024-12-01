@@ -10,6 +10,8 @@ import CreateShipment from '@/views/CreateShipment.vue'
 import CustomerServicePage from '@/views/CustomerServicePage.vue'
 import HomePage from '@/views/HomePage.vue'
 import TrackPage from '@/views/TrackPage.vue'
+import GetShipmentPage from '@/components/widgets/singles/shipment/GetShipmentPage.vue'
+import QuoteShipment from '@/views/QuoteShipment.vue'
 
 // Define routes that should preserve form data
 const PRESERVE_STATE_ROUTES = ['CreateShipment', 'SignUp', 'SignIn'];
@@ -36,6 +38,19 @@ const router = createRouter({
       path: '/create-shipment',
       name: 'CreateShipment',
       component: CreateShipment,
+      beforeEnter: (to, from, next) => {
+        // Load saved state if it exists
+        const savedState = localStorage.getItem(`form_state_${to.name}`);
+        if (savedState) {
+          to.params.savedState = JSON.parse(savedState);
+        }
+        next();
+      }
+    },
+    {
+      path: '/get-shipment',
+      name: 'QuoteShipment',
+      component: QuoteShipment,
       beforeEnter: (to, from, next) => {
         // Load saved state if it exists
         const savedState = localStorage.getItem(`form_state_${to.name}`);

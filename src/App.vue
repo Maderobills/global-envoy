@@ -50,7 +50,7 @@ const isLoggedIn = computed(() => store.user.firstName !== 'Guest');
           </RouterLink>
           <div class="absolute hidden group-hover:block bg-white shadow-lg mt-0 rounded">
             <RouterLink to="/create-shipment" class="block px-4 py-2 hover:bg-gray-200">Create Shipment</RouterLink>
-            <RouterLink to="/quote-shipment" class="block px-4 py-2 hover:bg-gray-200">Shipping Rates</RouterLink>
+            <RouterLink to="/get-shipment" class="block px-4 py-2 hover:bg-gray-200">Shipping Rates</RouterLink>
           </div>
         </div>
 
