@@ -3,7 +3,9 @@
   <main class="h-screen flex flex-col justify-center items-center">
     <form @submit.prevent="submitForm" class="bg-white p-20 pt-10 max-w-3xl w-full rounded-md h-4/5 overflow-hidden overflow-y-scroll">
       <!-- ... existing form header ... -->
-
+      <h1 class="text-2xl my-6">
+        Sign up for Global<span class="font-extrabold text-slate-900">Envoy</span>
+      </h1>
       <!-- Personal Information Section -->
       <section class="mb-6">
         <div class="flex flex-wrap gap-4 mb-4">

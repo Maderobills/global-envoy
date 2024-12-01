@@ -5,7 +5,7 @@
       class="bg-white p-20 pt-10 max-w-3xl w-full rounded-md h-4/5 overflow-hidden overflow-y-scroll"
     >
       <h1 class="text-2xl my-6">
-        Sign up for Global<span class="font-extrabold text-slate-900">Envoy</span>
+        Sign in for Global<span class="font-extrabold text-slate-900">Envoy</span>
       </h1>
 
       <!-- Login Fields -->
