@@ -1,121 +1,227 @@
 <template>
-    <main>
-        <TrackingInput/>
+  <main class="min-h-screen flex flex-col">
+    <div class="relative h-80">
+      <!-- Hero section with optimized background loading -->
+      <div 
+        class="absolute inset-0 bg-cover bg-center"
+        :style="backgroundImageStyle"
+        aria-hidden="true"
+      />
+      <div class="relative h-full flex flex-col items-center justify-center space-y-6 bg-black/40 px-4">
+        <h1 class="text-4xl font-bold text-white">Track Your Shipment</h1>
+        
+        <!-- Search form with improved accessibility -->
+        <form @submit.prevent="handleSubmit" class="w-full max-w-2xl">
+          <div class="flex w-full bg-white p-2 rounded shadow-lg">
+            <input
+              v-model="trackingInput"
+              type="text"
+              placeholder="Enter your tracking number"
+              :disabled="isLoading"
+              class="flex-1 h-12 px-4 text-slate-900 text-md outline-none rounded-s"
+              :class="{ 'opacity-50': isLoading }"
+            />
+            <button
+              type="submit"
+              :disabled="isLoading || !trackingInput"
+              class="transition bg-slate-900 px-10 font-semibold rounded text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-800"
+            >
+              <span v-if="isLoading">
+                <span class="inline-block animate-spin mr-2">⟳</span>
+                Loading...
+              </span>
+              <span v-else>Track</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
 
-        <section class="flex flex-col w-11/12 justify-self-center p-4 space-y-10">
-            <div class="w-full space-y-2 text-white font-semibold bg-bgcolor rounded drop-shadow-2xl h-fit p-4">
-                <div class="w-full flex justify-between">
-                    <h4>Package ID: <span class="font-thin">24006</span></h4>
-                    <h4>Tracking Number: <span class="font-thin">123456789</span></h4>
-                </div>
-                <div class="w-full flex justify-between">
-                    <h4>Delivered from: <span class="font-thin">Chong Hong-Warehouse(B34) Shang-Street</span></h4>
-                    <h4>Delivered To: <span class="font-thin">Austin Warehouse</span></h4>
-                </div>
-                <h4>Estimated Delivery: <span class="font-thin">December 10, 2024</span></h4>
+    <!-- Results section with improved error handling and loading states -->
+    <section class="w-4/5 max-w-7xl mx-auto px-4 pt-8 space-y-6 my-5" aria-live="polite">
+      <div 
+        v-if="error" 
+        id="error-message"
+        role="alert"
+        class="p-4 bg-red-50 border border-red-200 rounded text-red-700"
+      >
+        {{ error }}
+      </div>
 
-            </div>
-            <div class="h-80 w-full bg-slate-100 rounded p-5 space-y-6 overflow-hidden overflow-y-auto">
-                <div class="h-10 border-l-4 border-emerald-500 bg-white flex items-center rounded space-x-2">
-                    <i class="fi fi-ts-bullet flex items-center text-lg pl-4"></i>
-                    <div class="bg-white flex items-center space-x-2 text-slate-600">
-                        <h4>Order Recieved</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h4>Chong Hong-Warehouse(B34) Shang-Street</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h3>November 2, 2024</h3>
+      <Suspense>
+        <template #default>
+          <DashTrack
+            v-if="!error && shipmentData"
+            :package-id="shipmentData.customerId"
+            :tracking-number="shipmentData.trackingNumber"
+            :delivered-from="shipmentData.destinationAddress"
+            :delivered-to="shipmentData.originAddress"
+            :estimated-delivery="shipmentData.estimateDeliveryDate"
+          />
+        </template>
+        <template #fallback>
+          <div class="animate-pulse space-y-4">
+            <div class="h-4 bg-slate-200 rounded w-3/4"></div>
+            <div class="h-4 bg-slate-200 rounded w-1/2"></div>
+          </div>
+        </template>
+      </Suspense>
+      
+      <div 
+        v-if="showNoResultsMessage" 
+        class="text-center text-gray-500 py-12"
+      >
+        No shipments found for this tracking number.
+      </div>
+    </section>
 
+    <section aria-label="Tracking timeline" class="w-4/5 max-w-7xl mx-auto px-10 my-5">
+      <TransitionGroup 
+        name="list"
+        tag="div"
+        class="space-y-4"
+      >
+        <StatusTrack
+          v-for="status in sortedTrackingStages"
+          :key="status.key"
+          :location="status.location"
+          :note="status.note"
+          :status="status.status"
+          :date="status.date"
+        />
+      </TransitionGroup>
+    </section>
 
-                    </div>
-                </div>
-                <div class="h-10 border-l-4 border-emerald-500 bg-white flex items-center rounded space-x-2">
-                    <i class="fi fi-ts-bullet flex items-center text-lg pl-4"></i>
-                    <div class="bg-white flex items-center space-x-2 text-slate-600">
-                        <h4>Order Recieved</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h4>Chong Hong-Warehouse(B34) Shang-Street</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h3>November 2, 2024</h3>
-
-
-                    </div>
-                </div>
-                <div class="h-10 border-l-4 border-emerald-500 bg-white flex items-center rounded space-x-2">
-                    <i class="fi fi-ts-bullet flex items-center text-lg pl-4"></i>
-                    <div class="bg-white flex items-center space-x-2 text-slate-600">
-                        <h4>Order Recieved</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h4>Chong Hong-Warehouse(B34) Shang-Street</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h3>November 2, 2024</h3>
-
-
-                    </div>
-                </div>
-                <div class="h-10 border-l-4 border-emerald-500 bg-white flex items-center rounded space-x-2">
-                    <i class="fi fi-ts-bullet flex items-center text-lg pl-4"></i>
-                    <div class="bg-white flex items-center space-x-2 text-slate-600">
-                        <h4>Order Recieved</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h4>Chong Hong-Warehouse(B34) Shang-Street</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h3>November 2, 2024</h3>
-
-
-                    </div>
-                </div>
-                <div class="h-10 border-l-4 border-emerald-500 bg-white flex items-center rounded space-x-2">
-                    <i class="fi fi-ts-bullet flex items-center text-lg pl-4"></i>
-                    <div class="bg-white flex items-center space-x-2 text-slate-600">
-                        <h4>Order Recieved</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h4>Chong Hong-Warehouse(B34) Shang-Street</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h3>November 2, 2024</h3>
-
-
-                    </div>
-                </div>
-                <div class="h-10 border-l-4 border-emerald-500 bg-white flex items-center rounded space-x-2">
-                    <i class="fi fi-ts-bullet flex items-center text-lg pl-4"></i>
-                    <div class="bg-white flex items-center space-x-2 text-slate-600">
-                        <h4>Order Recieved</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h4>Chong Hong-Warehouse(B34) Shang-Street</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h3>November 2, 2024</h3>
-
-
-                    </div>
-                </div>
-                <div class="h-10 border-l-4 border-yellow-500 bg-white flex items-center rounded shadow-2xl shadow-yellow-100 space-x-2">
-                    <i class="fi fi-ts-bullet flex items-center text-lg pl-4"></i>
-                    <div class="bg-white flex items-center space-x-2 text-slate-600">
-                        <h4>Order Recieved</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h4>Chong Hong-Warehouse(B34) Shang-Street</h4>
-                        <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-                        <h3>November 2, 2024</h3>
-
-
-                    </div>
-                </div>
-
-            </div>
-        </section>
-        <FooterView/>
-
-    </main>
+  </main>
 </template>
-<script>
-import FooterView from '@/components/widgets/singles/FooterView.vue';
-import TrackingInput from '@/components/widgets/TrackingInput.vue';
 
-export default {
-    name: 'TrackPage',
-    components:{
-        TrackingInput,
-        FooterView,
+<script setup lang="ts">
+import { ref, computed, onMounted, watchEffect } from 'vue'
+import { useShipmentStore } from '@/stores/shipmentStore'
+import { useTrackStore } from '@/stores/statusStore'
+import DashTrack from '@/components/widgets/track-comps/DashTrack.vue'
+import StatusTrack from '@/components/widgets/track-comps/StatusTrack.vue'
+import { useFirebaseStore } from '@/stores/firebaseStore'
+
+// State management
+const trackingInput = ref('')
+const isLoading = ref(false)
+const error = ref('')
+const showingShipments = ref(false)
+
+// Store initialization
+const shipmentStore = useShipmentStore()
+const trackStore = useTrackStore()
+const firebaseStore = useFirebaseStore()
+
+// Computed properties
+const user = computed(() => firebaseStore.user)
+const isLoggedIn = computed(() => user.value?.uid)
+
+// Build document path only when we have both a user and tracking number
+const docPath = computed(() => {
+  const userId = user.value?.uid
+  const trackingNum = trackingInput.value.trim()
+  
+  if (!userId || !trackingNum) {
+    return null
+  }
+  
+  return `/Users/${userId}/Shipments/${trackingNum}/Tracking/${trackingNum}`
+})
+
+const TRACKING_NUMBER_REGEX = /^[A-Z0-9]{6,}$/i
+
+const backgroundImageStyle = computed(() => ({
+  backgroundImage: 'url("https://img.freepik.com/free-photo/busy-shipping-port-with-containers-trade-action_91128-4581.jpg")',
+  loading: 'lazy'
+}))
+
+const isValidTrackingNumber = computed(() => 
+  TRACKING_NUMBER_REGEX.test(trackingInput.value.trim())
+)
+
+const shipmentData = computed(() => shipmentStore.shipmentData)
+
+const showNoResultsMessage = computed(() => 
+  showingShipments.value && !isLoading.value && !error.value && !shipmentData.value
+)
+
+const sortedTrackingStages = computed(() => {
+  if (!trackStore.content) return []
+  
+  const stageOrder = ['pendingPackage','packaging', 'transit1', 'transit2', 'delivered']
+  
+  return stageOrder
+    .map(key => ({
+      key,
+      ...(trackStore.content[key] || {}),
+    }))
+    .filter(stage => Object.keys(stage).length > 1)
+})
+
+// Event handlers
+async function handleSubmit() {
+  if (!isValidTrackingNumber.value || isLoading.value) return
+  
+  clearData()
+  isLoading.value = true
+  showingShipments.value = true
+  
+  try {
+    if (!isLoggedIn.value) {
+      throw new Error('Please log in to track shipments')
     }
+
+    if (!docPath.value) {
+      throw new Error('Invalid tracking information')
+    }
+
+    await Promise.all([
+      shipmentStore.fetchShipmentData(user.value.uid, trackingInput.value.trim()),
+      trackStore.fetchTrackingData(docPath.value)
+    ])
+    
+    if (!shipmentData.value) {
+      error.value = 'No shipment found with this tracking number.'
+    }
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Unable to fetch shipment data. Please try again later.'
+    console.error('Shipment fetch error:', e)
+  } finally {
+    isLoading.value = false
+  }
 }
+
+function clearData() {
+  shipmentStore.$reset()
+  trackStore.$reset()
+  showingShipments.value = false
+  error.value = ''
+}
+
+// Cleanup and initialization
+onMounted(() => {
+  clearData()
+})
+
+// Watch for store errors
+watchEffect(() => {
+  if (trackStore.error) {
+    error.value = trackStore.error
+  }
+})
 </script>
+
+<style scoped>
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+</style>

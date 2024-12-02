@@ -17,4 +17,13 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  server: {
+    proxy: {
+      '/api/shipping_quote': {
+        target: 'https://api.ebay.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/shipping_quote/, 'sell/logistics/v1_beta/shipping_quote'),
+      },
+    },
+  },
 })
