@@ -22,10 +22,9 @@
         <div class="space-y-4">
             <h5 class="text-slate-700 font-bold">Company Information</h5>
             <ul class="space-y-2">
-                <RouterLink to="about-us"><li>About Us</li></RouterLink>
-                <li>Careers</li>
-                <li>Privacy Policy</li>
-                <li>Terms and Conditions</li>
+                <li><RouterLink to="about-us">About Us</RouterLink></li>
+                <li><RouterLink to="terms-and-conditions-page">Privacy Policy</RouterLink></li>
+                <li><RouterLink to="terms-and-conditions-page">Terms and Conditions</RouterLink></li>
             </ul>
         </div>
         <div class="space-y-4">

@@ -15,6 +15,7 @@ import QuoteShipment from '@/views/QuoteShipment.vue'
 import PartnerShipment from '@/views/PartnerShipment.vue'
 import ContactSupport from '@/views/ContactSupport.vue'
 import FaqPage from '@/views/FaqPage.vue'
+import TermsConditions from '@/views/TermsConditions.vue'
 
 // Define routes that should preserve form data
 const PRESERVE_STATE_ROUTES = ['CreateShipment', 'SignUp', 'SignIn'];
@@ -36,6 +37,11 @@ const router = createRouter({
       path: '/faqs-page',
       name: 'FaqPage',
       component: FaqPage,
+    },
+    {
+      path: '/terms-and-conditions-page',
+      name: 'TermsPage',
+      component: TermsConditions,
     },
     {
       path: '/contact-support',
