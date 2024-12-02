@@ -13,6 +13,8 @@ import TrackPage from '@/views/TrackPage.vue'
 import GetShipmentPage from '@/components/widgets/singles/shipment/GetShipmentPage.vue'
 import QuoteShipment from '@/views/QuoteShipment.vue'
 import PartnerShipment from '@/views/PartnerShipment.vue'
+import ContactSupport from '@/views/ContactSupport.vue'
+import FaqPage from '@/views/FaqPage.vue'
 
 // Define routes that should preserve form data
 const PRESERVE_STATE_ROUTES = ['CreateShipment', 'SignUp', 'SignIn'];
@@ -29,6 +31,16 @@ const router = createRouter({
       path: '/Customer',
       name: 'CustomerService',
       component: CustomerServicePage,
+    },
+    {
+      path: '/faqs-page',
+      name: 'FaqPage',
+      component: FaqPage,
+    },
+    {
+      path: '/contact-support',
+      name: 'ContactSupport',
+      component: ContactSupport,
     },
     {
       path: '/TrackPackage',

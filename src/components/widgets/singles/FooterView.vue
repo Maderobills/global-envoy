@@ -4,7 +4,7 @@
             <div class="space-y-4">
             <h5 class="text-slate-700 font-bold">Quick Links</h5>
             <ul class="space-y-2">
-                <li><RouterLink to="/about-us">Customer Service</RouterLink></li>
+                <li><RouterLink to="/Customer">Customer Service</RouterLink></li>
                 <li><RouterLink to="sign-in">Customer Portal Logins</RouterLink></li>
                 <li>Digital Partners and Integrations</li>
                 <li><RouterLink to="/get-shipment">Get a Quote</RouterLink></li>

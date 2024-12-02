@@ -59,8 +59,8 @@ const isLoggedIn = computed(() => store.user.firstName !== 'Guest');
             <i class="fi fi-rr-headset"></i><span>Customer Service</span>
           </RouterLink>
           <div class="absolute hidden group-hover:block bg-white shadow-lg mt-0 rounded">
-            <RouterLink to="/service1" class="block px-4 py-2 hover:bg-gray-200">FAQs</RouterLink>
-            <RouterLink to="/service2" class="block px-4 py-2 hover:bg-gray-200">Contact Support</RouterLink>
+            <RouterLink to="/faqs-page" class="block px-4 py-2 hover:bg-gray-200">FAQs</RouterLink>
+            <RouterLink to="/contact-support" class="block px-4 py-2 hover:bg-gray-200">Contact Support</RouterLink>
             <RouterLink to="/about-us" class="block px-4 py-2 hover:bg-gray-200">About Us</RouterLink>
           </div>
         </div>
