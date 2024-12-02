@@ -32,7 +32,7 @@
             <div class="space-y-2">
                 <div class="space-x-3"><i class="fi fi-tr-phone-rotary"></i><span>+44 845 566 9546</span></div>
                 <div class="space-x-3"><i class="fi fi-tr-envelopes"></i><span>info@globalEnvoy.com</span></div>
-                <div class="space-x-3"><i class="fi fi-tr-pending"></i><span> Monday to Friday 9:30am <RouterLink to="/admin">-</RouterLink> 6:30pm</span></div>
+                <div class="space-x-3"><i class="fi fi-tr-pending"></i><span> Monday to Friday 9:30am - 6:30pm</span></div>
             </div>
         </div>
         </div>

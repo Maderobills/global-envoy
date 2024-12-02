@@ -160,12 +160,22 @@ const trackingStatus = {
       { trackingNumbers: arrayUnion(trackingNumbers) }, // Add to the list
       { merge: true } // Merge with existing fields
     );
-    // Save the data to Firestore
+    const docRall = doc(db, `Tracking/${shipmentId}`);
+    await setDoc(
+      docRall,
+      { trackingNumbers: arrayUnion(trackingNumbers) }, // Add to the list
+      { merge: true } // Merge with existing fields
+    );
+    // Save 
     const docRef = doc(db, `Users/${userId}/Shipments/${shipmentId}`);
     await setDoc(docRef, shipmentData, { merge: true });
+    const docRefall = doc(db, `Tracking/${shipmentId}/Shipments/${shipmentId}`);
+    await setDoc(docRefall, shipmentData, { merge: true });
 
     const docTrack = doc(db, `Users/${userId}/Shipments/${shipmentId}/Tracking/${shipmentId}`);
     await setDoc(docTrack, trackingStatus, { merge: true });
+    const docTrackall = doc(db, `Tracking/${shipmentId}/Shipments/${shipmentId}/Tracking/${shipmentId}`);
+    await setDoc(docTrackall, trackingStatus, { merge: true });
 
     console.log("Data saved successfully!");
   } catch (error) {
