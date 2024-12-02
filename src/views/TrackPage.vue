@@ -124,7 +124,7 @@ const docPath = computed(() => {
   const trackingNum = trackingInput.value.trim()
   
   if (!userId || !trackingNum) {
-    return null
+    return  `/Tracking/${trackingNum}/Shipments/${trackingNum}/Tracking/${trackingNum}`
   }
   
   return `/Users/${userId}/Shipments/${trackingNum}/Tracking/${trackingNum}`
@@ -170,7 +170,10 @@ async function handleSubmit() {
   
   try {
     if (!isLoggedIn.value) {
-      throw new Error('Please log in to track shipments')
+      await Promise.all([
+      shipmentStore.fetchShipmentData(trackingInput.value.trim(), trackingInput.value.trim()),
+      trackStore.fetchTrackingData(docPath.value)
+    ])
     }
 
     if (!docPath.value) {
