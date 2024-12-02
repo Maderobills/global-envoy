@@ -93,13 +93,5 @@ export default {
 </script>
 
 <style>
-.card {
-  @apply rounded-md shadow-sm bg-white overflow-hidden;
-}
-.card-header {
-  @apply border-b;
-}
-.card-content {
-  @apply text-sm;
-}
+
 </style>
