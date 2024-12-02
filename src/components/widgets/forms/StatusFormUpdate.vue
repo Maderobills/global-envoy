@@ -142,7 +142,7 @@ const props = defineProps(["uid", "trackingNum"]);
 
 const statusStore = useTrackStore();
 
-const statusOptions = ["pending", "success", "failed"];
+const statusOptions = ["pending","hold", "success", "failed"];
 const formData = ref({ transitType: "", location: "", note: "", date: "", status: "" });
 const editMode = ref(false);
 const latestUpdate = computed(() => statusStore.content);
@@ -153,6 +153,7 @@ const trackingNum = props.trackingNum || "tracking123";
 onMounted(async () => {
   try {
     await statusStore.fetchTrackingData(`/Users/${userId}/Shipments/${trackingNum}/Tracking/${trackingNum}`);
+    await statusStore.fetchTrackingData(`/Tracking/${trackingNum}/Shipments/${trackingNum}/Tracking/${trackingNum}`);
   } catch (error) {
     console.error("Failed to fetch tracking data:", error);
   }
@@ -199,8 +200,10 @@ const handleSubmit = async () => {
 
     if (editMode.value) {
       await statusStore.updateTrackingData(`/Users/${userId}/Shipments/${trackingNum}/Tracking/${trackingNum}`, updatedData);
+      await statusStore.updateTrackingData(`/Tracking/${trackingNum}/Shipments/${trackingNum}/Tracking/${trackingNum}`, updatedData);
     } else {
       await statusStore.setTrackingData(`/Users/${userId}/Shipments/${trackingNum}/Tracking/${trackingNum}`, updatedData);
+      await statusStore.setTrackingData(`/Tracking/${trackingNum}/Shipments/${trackingNum}/Tracking/${trackingNum}`, updatedData);
     }
 
     formData.value = { transitType: "", location: "", note: "", date: "", status: "" };

@@ -162,6 +162,8 @@ const sortedTrackingStages = computed(() => {
 
 // Event handlers
 async function handleSubmit() {
+  const trackingNum = trackingInput.value.trim();
+  const useId = user.value.uid;
   if (!isValidTrackingNumber.value || isLoading.value) return
   
   clearData()
@@ -171,7 +173,7 @@ async function handleSubmit() {
   try {
     if (!isLoggedIn.value) {
       await Promise.all([
-      shipmentStore.fetchShipmentData(trackingInput.value.trim(), trackingInput.value.trim()),
+      shipmentStore.fetchShipmentData(`User/${useId}/Shipments/${trackingNum}/`),
       trackStore.fetchTrackingData(docPath.value)
     ])
     }
@@ -181,7 +183,7 @@ async function handleSubmit() {
     }
 
     await Promise.all([
-      shipmentStore.fetchShipmentData(user.value.uid, trackingInput.value.trim()),
+      shipmentStore.fetchShipmentData(`Tracking/${trackingNum}/Shipments/${trackingNum}`),
       trackStore.fetchTrackingData(docPath.value)
     ])
     

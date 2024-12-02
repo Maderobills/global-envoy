@@ -96,27 +96,21 @@ const shipmentId = generateTrackingNumber({
   length: 15, // Custom length for the tracking number
 });
 
-const firebaseStore = useFirebaseStore()
+const firebaseStore = useFirebaseStore();
 
-
-const user = computed(() => firebaseStore.user)
-const isLoggedIn = computed(() => user.value?.uid)
-const userId = user.value?.uid
+const user = computed(() => firebaseStore.user);
+const isLoggedIn = computed(() => !!user.value?.uid);
+const userId = computed(() => user.value?.uid);
 
 const handleSubmit = async () => {
   try {
-    // Extract the required fields
-    const destinationAddress =
-      destinationStore.formData.toCountry +
-      ", " +
-      destinationStore.formData.fromCity;
-    const originAddress =
-      destinationStore.formData.fromCountry +
-      ", " +
-      destinationStore.formData.toCity;
     const shipmentDate = new Date().toLocaleString();
-    const estimateDeliveryDate = calcStore.quote.deliveryDate;
+    const destinationAddress =
+      destinationStore.formData.toCountry + ", " + destinationStore.formData.fromCity;
+    const originAddress =
+      destinationStore.formData.fromCountry + ", " + destinationStore.formData.toCity;
 
+    const estimateDeliveryDate = calcStore.quote.deliveryDate;
     const trackingNumbers = shipmentId;
 
     const shipmentData = {
@@ -128,54 +122,53 @@ const handleSubmit = async () => {
     };
 
     const PackageDetails = {
-  packageType: packageStore.formData.packageType,
-  description: packageStore.formData.description,
-  width: packageStore.formData.width,
-  length: packageStore.formData.length,
-  weight: packageStore.formData.weight,
-  height: packageStore.formData.height,
-};
+      packageType: packageStore.formData.packageType,
+      description: packageStore.formData.description,
+      width: packageStore.formData.width,
+      length: packageStore.formData.length,
+      weight: packageStore.formData.weight,
+      height: packageStore.formData.height,
+    };
 
-const pendingPackage = {
-  location: "Order awaiting approval",
-  note: "proccessing",
-  date: shipmentDate,
-  status: "pending",
-};
+    const pendingPackage = {
+      location: "Order awaiting approval",
+      note: "Processing",
+      date: shipmentDate,
+      status: "pending",
+    };
 
-const trackingStatus = {
-  PackageDetails,
-  pendingPackage,
-};
-
-
-
-
+    const trackingStatus = {
+      PackageDetails,
+      pendingPackage,
+    };
 
     console.log("Data to be saved:", shipmentData);
 
-    const docR = doc(db, `Users/${userId}`);
-    await setDoc(
-      docR,
-      { trackingNumbers: arrayUnion(trackingNumbers) }, // Add to the list
-      { merge: true } // Merge with existing fields
-    );
-    const docRall = doc(db, `Tracking/${shipmentId}`);
-    await setDoc(
-      docRall,
-      { trackingNumbers: arrayUnion(trackingNumbers) }, // Add to the list
-      { merge: true } // Merge with existing fields
-    );
-    // Save 
-    const docRef = doc(db, `Users/${userId}/Shipments/${shipmentId}`);
-    await setDoc(docRef, shipmentData, { merge: true });
-    const docRefall = doc(db, `Tracking/${shipmentId}/Shipments/${shipmentId}`);
-    await setDoc(docRefall, shipmentData, { merge: true });
+    if (!userId.value) {
+      // Save to global tracking collection if user is not logged in
+      const docRall = doc(db, `Tracking/${shipmentId}`);
+      const docRefall = doc(db, `Tracking/${shipmentId}/Shipments/${shipmentId}`);
+      const docTrackall = doc(
+        db,
+        `Tracking/${shipmentId}/Shipments/${shipmentId}/Tracking/${shipmentId}`
+      );
 
-    const docTrack = doc(db, `Users/${userId}/Shipments/${shipmentId}/Tracking/${shipmentId}`);
-    await setDoc(docTrack, trackingStatus, { merge: true });
-    const docTrackall = doc(db, `Tracking/${shipmentId}/Shipments/${shipmentId}/Tracking/${shipmentId}`);
-    await setDoc(docTrackall, trackingStatus, { merge: true });
+      await setDoc(docRall, { trackingNumbers: arrayUnion(trackingNumbers) }, { merge: true });
+      await setDoc(docRefall, shipmentData, { merge: true });
+      await setDoc(docTrackall, trackingStatus, { merge: true });
+    } else {
+      // Save to user-specific tracking collection
+      const docR = doc(db, `Users/${userId.value}`);
+      const docRef = doc(db, `Users/${userId.value}/Shipments/${shipmentId}`);
+      const docTrack = doc(
+        db,
+        `Users/${userId.value}/Shipments/${shipmentId}/Tracking/${shipmentId}`
+      );
+
+      await setDoc(docR, { trackingNumbers: arrayUnion(trackingNumbers) }, { merge: true });
+      await setDoc(docRef, shipmentData, { merge: true });
+      await setDoc(docTrack, trackingStatus, { merge: true });
+    }
 
     console.log("Data saved successfully!");
   } catch (error) {

@@ -13,12 +13,12 @@ export const useShipmentStore = defineStore('shipment', {
         error: null,
     }),
     actions: {
-        async fetchShipmentData(userId, shipmentId) {
+        async fetchShipmentData(fullPath) {
             this.loading = true;
             this.error = null;
 
             try {
-                const docRef = doc(db, `Users/${userId}/Shipments/${shipmentId}`);
+                const docRef = doc(db, `${fullPath}`);
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {

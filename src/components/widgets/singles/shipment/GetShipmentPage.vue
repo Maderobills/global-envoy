@@ -12,7 +12,7 @@
         </p>
       </div>
       <div class="transition skew-y-3 shadow-xl">
-        <img class="rounded-lg" src="https://img.freepik.com/free-photo/male-entrepreneur-analyzing-stock-products-orders-doing-inventory-laptop-warehouse-young-man-using-logistics-financial-planning-send-merchandise-development-handheld-shot_482257-62665.jpg?" alt="">
+        <img class="rounded-lg" src="https://img.freepik.com/free-vector/hanging-style-percentage-icon-background-design-calculating-commission_1017-45141.jpg?" alt="">
       </div>
     </div>
 

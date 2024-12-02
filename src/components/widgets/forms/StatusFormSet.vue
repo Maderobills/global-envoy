@@ -115,8 +115,8 @@ import { ref, computed, onMounted } from "vue";
 const props = defineProps(["uid", "trackingNum"]);
 const statusStore = useTrackStore();
 
-const transitOptions = ["transit1", "transit2", "delivered", "packaging"];
-const statusOptions = ["pending", "success", "failed"];
+const transitOptions = ["pendingPackage","transit1", "transit2", "delivered", "packaging"];
+const statusOptions = ["pending","hold", "success", "failed"];
 
 const formData = ref({
   transitType: "",
@@ -132,6 +132,7 @@ const latestUpdate = computed(() => statusStore.content);
 onMounted(async () => {
   try {
     await statusStore.fetchTrackingData(`/Users/${props.uid}/Shipments/${props.trackingNum}/Tracking/${props.trackingNum}`);
+    await statusStore.fetchTrackingData(`/Tracking/${props.trackingNum}/Shipments/${props.trackingNum}/Tracking/${props.trackingNum}`);
     const firstTransitType = Object.keys(latestUpdate.value)[0];
     if (firstTransitType) {
       setFormDataForTransitType(firstTransitType);
@@ -197,8 +198,10 @@ const handleSubmit = async () => {
 
     if (editMode.value) {
       await statusStore.updateTrackingData(`/Users/${props.uid}/Shipments/${props.trackingNum}/Tracking/${props.trackingNum}`, updatedData);
+      await statusStore.updateTrackingData(`/Tracking/${props.trackingNum}/Shipments/${props.trackingNum}/Tracking/${props.trackingNum}`, updatedData);
     } else {
       await statusStore.setTrackingData(`/Users/${props.uid}/Shipments/${props.trackingNum}/Tracking/${props.trackingNum}`, updatedData);
+      await statusStore.setTrackingData(`/Tracking/${props.trackingNum}/Shipments/${props.trackingNum}/Tracking/${props.trackingNum}`, updatedData);
     }
 
     resetForm();
