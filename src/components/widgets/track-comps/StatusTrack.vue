@@ -4,6 +4,7 @@
     :class="{
       'border-emerald-500': status === 'success',
       'border-yellow-500': status === 'pending',
+      'border-orange-500': status === 'hold',
       'border-red-500': status === 'failed'
     }"
   >
