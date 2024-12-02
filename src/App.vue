@@ -78,6 +78,9 @@ const handleSignOut = async () => {
             <RouterLink to="/about-us" class="block px-4 py-2 hover:bg-gray-200">About Us</RouterLink>
           </div>
         </div>
+        <RouterLink to="/admin" class="flex items-baseline space-x-2">
+          <i class="fi fi-rr-admin-alt"></i><span>Admin</span>
+          </RouterLink>
       </div>
 
       <!-- Conditional Rendering for User Login -->
