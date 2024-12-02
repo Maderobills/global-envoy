@@ -1,21 +1,35 @@
 <script setup>
-import { useFirebaseStore } from '@/stores/firebaseStore';
-import { computed } from 'vue';
-import { RouterLink } from 'vue-router';
-import FooterView from './components/widgets/singles/FooterView.vue';
+import { computed } from "vue";
+import { useFirebaseStore } from "@/stores/firebaseStore";
+import FooterView from "@/components/widgets/singles/FooterView.vue";
 
 const store = useFirebaseStore();
 const user = computed(() => store.user);
-const isLoggedIn = computed(() => store.user.firstName !== 'Guest');
+const isLoggedIn = computed(() => store.user.firstName !== "Guest");
+
+const handleSignOut = async () => {
+  try {
+    await store.signOut();
+    store.updateUserState({
+      uid: "",
+      firstName: "Guest",
+      lastName: "User",
+    });
+  } catch (error) {
+    console.error("Error during sign-out:", error);
+    alert("Sign-out failed. Please try again.");
+  }
+};
 </script>
+
 
 <template>
   <header class="w-screen h-fit">
     <div class="bg-bgcolor text-white w-full h-14 flex justify-evenly items-center">
       <RouterLink to="/">
         <h1 class="text-2xl">
-        Global<span class="font-extrabold text-slate-900">Envoy</span>
-      </h1>
+          Global<span class="font-extrabold text-slate-900">Envoy</span>
+        </h1>
       </RouterLink>
       <div class="flex space-x-4 text-sm">
         <div class="h-12 flex justify-center items-center space-x-2 hover:text-slate-900 cursor-pointer">
@@ -76,9 +90,11 @@ const isLoggedIn = computed(() => store.user.firstName !== 'Guest');
           <h3 class="font-medium text-slate-600">{{ user.firstName }} {{ user.lastName }}</h3>
         </div>
         <div class="absolute hidden group-hover:block bg-white shadow-lg mt-0 rounded">
-            <RouterLink to="/" class="block px-4 py-2 hover:bg-gray-200">Profile</RouterLink>
-            <RouterLink to="/" class="block px-4 py-2 hover:bg-gray-200 text-red-600">Logout</RouterLink>
-          </div>
+          <RouterLink to="/" class="block px-4 py-2 hover:bg-gray-200">Profile</RouterLink>
+          <RouterLink to="/" class="block px-4 py-2 hover:bg-gray-200 text-red-600" @click.prevent="handleSignOut">
+            Logout
+          </RouterLink>
+        </div>
       </div>
     </nav>
   </header>
@@ -86,14 +102,15 @@ const isLoggedIn = computed(() => store.user.firstName !== 'Guest');
   <main class="h-dvh overflow-y-scroll">
     <Transition name="fade">
       <RouterView />
-      
+
     </Transition>
-    <FooterView/>
+    <FooterView />
   </main>
 </template>
 
 <style>
 @import '@flaticon/flaticon-uicons/css/all/all.css';
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s ease;
