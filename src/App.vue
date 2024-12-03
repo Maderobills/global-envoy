@@ -3,6 +3,7 @@ import { computed } from "vue";
 import { useFirebaseStore } from "@/stores/firebaseStore";
 import FooterView from "@/components/widgets/singles/FooterView.vue";
 
+
 const store = useFirebaseStore();
 const user = computed(() => store.user);
 const isLoggedIn = computed(() => store.user.firstName !== "Guest");

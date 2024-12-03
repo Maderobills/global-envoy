@@ -82,6 +82,8 @@ import { useCalcStore } from "@/stores/calcStore";
 import { generateTrackingNumber } from "@/stores/trackGenerator.js";
 import { computed } from "vue";
 import { useFirebaseStore } from "@/stores/firebaseStore";
+import Swal from "sweetalert2";
+
 
 const db = getFirestore(firebaseApp);
 const store = useCreditCardStore();
@@ -102,17 +104,51 @@ const user = computed(() => firebaseStore.user);
 const isLoggedIn = computed(() => !!user.value?.uid);
 const userId = computed(() => user.value?.uid);
 
+const validateDestinationStore = () => {
+  const { toCountry, toCity, fromCountry, fromCity } = destinationStore.formData;
+
+  if (!toCountry || !toCity || !fromCountry || !fromCity) {
+    throw new Error("Please complete all fields in the destination form.");
+  }
+
+  if (toCountry === fromCountry && toCity === fromCity) {
+    throw new Error("Destination and origin cannot be the same.");
+  }
+};
+
+const validatePackageStore = () => {
+  const { packageType, description, width, length, weight, height } = packageStore.formData;
+
+  if (!packageType || !description || !width || !length || !weight || !height) {
+    throw new Error("Please complete all fields in the package form.");
+  }
+
+  if (width <= 0 || length <= 0 || height <= 0 || weight <= 0) {
+    throw new Error("Package dimensions and weight must be positive values.");
+  }
+};
+
+
 const handleSubmit = async () => {
   try {
-    const shipmentDate = new Date().toLocaleString();
-    const destinationAddress =
-      destinationStore.formData.toCountry + ", " + destinationStore.formData.fromCity;
-    const originAddress =
-      destinationStore.formData.fromCountry + ", " + destinationStore.formData.toCity;
+    // Validate form data
+    validateDestinationStore();
+    validatePackageStore();
 
+    // Format the current date and time
+    const shipmentDate = new Date().toLocaleString();
+
+    // Construct destination and origin addresses
+    const destinationAddress =
+      `${destinationStore.formData.toCountry}, ${destinationStore.formData.toCity}`;
+    const originAddress =
+      `${destinationStore.formData.fromCountry}, ${destinationStore.formData.fromCity}`;
+
+    // Extract other data
     const estimateDeliveryDate = calcStore.quote.deliveryDate;
     const trackingNumbers = shipmentId;
 
+    // Construct the shipment data object
     const shipmentData = {
       shipmentId,
       destinationAddress,
@@ -121,6 +157,7 @@ const handleSubmit = async () => {
       estimateDeliveryDate,
     };
 
+    // Construct package details
     const PackageDetails = {
       packageType: packageStore.formData.packageType,
       description: packageStore.formData.description,
@@ -130,6 +167,7 @@ const handleSubmit = async () => {
       height: packageStore.formData.height,
     };
 
+    // Construct tracking status
     const pendingPackage = {
       location: "Order awaiting approval",
       note: "Processing",
@@ -142,8 +180,9 @@ const handleSubmit = async () => {
       pendingPackage,
     };
 
-    console.log("Data to be saved:", shipmentData);
+    console.log("Data to be saved:", { shipmentData, trackingStatus });
 
+    // Check user login state and save to appropriate Firestore path
     if (!userId.value) {
       // Save to global tracking collection if user is not logged in
       const docRall = doc(db, `Tracking/${shipmentId}`);
@@ -170,9 +209,37 @@ const handleSubmit = async () => {
       await setDoc(docTrack, trackingStatus, { merge: true });
     }
 
+    // Show success alert using SweetAlert2
+    await Swal.fire({
+      icon: 'success',
+      title: 'Shipment created successfully!',
+      html: `Please copy your tracking number: <strong>${trackingNumbers}</strong>`,
+      showCancelButton: true,
+      confirmButtonText: 'Copy Tracking Number',
+      cancelButtonText: 'Close',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Copy the tracking number to clipboard
+        navigator.clipboard.writeText(trackingNumbers).then(() => {
+          Swal.fire('Copied!', 'Tracking number has been copied to clipboard.', 'success');
+        }).catch((err) => {
+          Swal.fire('Error', 'Failed to copy tracking number. Please copy it manually.', 'error');
+        });
+      }
+    });
+
     console.log("Data saved successfully!");
   } catch (error) {
     console.error("Error submitting form:", error.message);
+
+    // Show error alert using SweetAlert2
+    await Swal.fire({
+      icon: 'error',
+      title: 'Submission failed!',
+      text: `An error occurred: ${error.message}`,
+    });
   }
 };
+
+
 </script>
