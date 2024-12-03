@@ -16,6 +16,7 @@ import PartnerShipment from '@/views/PartnerShipment.vue'
 import ContactSupport from '@/views/ContactSupport.vue'
 import FaqPage from '@/views/FaqPage.vue'
 import TermsConditions from '@/views/TermsConditions.vue'
+import LocationSearch from '@/views/LocationSearch.vue'
 
 // Define routes that should preserve form data
 const PRESERVE_STATE_ROUTES = ['CreateShipment', 'SignUp', 'SignIn'];
@@ -27,6 +28,11 @@ const router = createRouter({
       path: '/',
       name: 'track',
       component: HomePage,
+    },
+    {
+      path: '/location-search',
+      name: 'LocationSearch',
+      component: LocationSearch,
     },
     {
       path: '/Customer',

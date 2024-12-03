@@ -34,8 +34,10 @@ const handleSignOut = async () => {
       </RouterLink>
       <div class="flex space-x-4 text-sm">
         <div class="h-12 flex justify-center items-center space-x-2 hover:text-slate-900 cursor-pointer">
-          <h5>Find a Location</h5>
+          <RouterLink to="/location-search">
+            <h5>Find a Location</h5>
           <i class="fi fi-rs-land-layer-location"></i>
+          </RouterLink>
         </div>
         <div class="h-12 flex justify-center items-center space-x-2 hover:text-slate-900 cursor-pointer">
           <h5>Search</h5>
