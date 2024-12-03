@@ -10,7 +10,7 @@
           class="rounded-s h-12 w-96 p-5 text-slate-900 text-md outline-none"
         />
         <button 
-          @click="handleOnclick" 
+          @click="emitTrackingNumber" 
           class="transition bg-slate-900 px-10 font-semibold hover:font-bold rounded shadow-slate-900 hover:shadow-md text-white">
           Track
         </button>
@@ -20,18 +20,27 @@
 </template>
 
 <script>
+import router from '@/router';
+
 export default {
   data() {
     return {
       trackingInput: '',
     };
   },
-  
   computed: {
     backgroundImageStyle() {
       return {
         backgroundImage: `url('https://img.freepik.com/free-photo/busy-shipping-port-with-containers-trade-action_91128-4581.jpg')`,
       };
+    },
+  },
+  methods: {
+    emitTrackingNumber() {
+      if (this.trackingInput.trim()) {
+        this.$emit('tracking-number', this.trackingInput.trim());
+        router.push('/TrackPackage')
+      }
     },
   },
 };

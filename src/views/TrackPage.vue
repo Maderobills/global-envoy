@@ -96,127 +96,138 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watchEffect } from 'vue'
-import { useShipmentStore } from '@/stores/shipmentStore'
-import { useTrackStore } from '@/stores/statusStore'
-import DashTrack from '@/components/widgets/track-comps/DashTrack.vue'
-import StatusTrack from '@/components/widgets/track-comps/StatusTrack.vue'
-import { useFirebaseStore } from '@/stores/firebaseStore'
+import { ref, computed, onMounted, watchEffect } from 'vue';
+import { useShipmentStore } from '@/stores/shipmentStore';
+import { useTrackStore } from '@/stores/statusStore';
+import DashTrack from '@/components/widgets/track-comps/DashTrack.vue';
+import StatusTrack from '@/components/widgets/track-comps/StatusTrack.vue';
+import { useFirebaseStore } from '@/stores/firebaseStore';
+
+const fromTrack = defineProps(['getTrack']);
 
 // State management
-const trackingInput = ref('')
-const isLoading = ref(false)
-const error = ref('')
-const showingShipments = ref(false)
+const trackingInput = ref('');
+const isLoading = ref(false);
+const error = ref('');
+const showingShipments = ref(false);
 
 // Store initialization
-const shipmentStore = useShipmentStore()
-const trackStore = useTrackStore()
-const firebaseStore = useFirebaseStore()
+const shipmentStore = useShipmentStore();
+const trackStore = useTrackStore();
+const firebaseStore = useFirebaseStore();
 
 // Computed properties
-const user = computed(() => firebaseStore.user)
-const isLoggedIn = computed(() => user.value?.uid)
+const user = computed(() => firebaseStore.user);
+const isLoggedIn = computed(() => user.value?.uid);
 
 // Build document path only when we have both a user and tracking number
 const docPath = computed(() => {
-  const userId = user.value?.uid
-  const trackingNum = trackingInput.value.trim()
+  const userId = user.value?.uid;
+  const trackingNum = trackingInput.value.trim();
   
   if (!userId || !trackingNum) {
-    return  `/Tracking/${trackingNum}/Shipments/${trackingNum}/Tracking/${trackingNum}`
+    return `/Tracking/${trackingNum}/Shipments/${trackingNum}/Tracking/${trackingNum}`;
   }
   
-  return `/Users/${userId}/Shipments/${trackingNum}/Tracking/${trackingNum}`
-})
+  return `/Users/${userId}/Shipments/${trackingNum}/Tracking/${trackingNum}`;
+});
 
-const TRACKING_NUMBER_REGEX = /^[A-Z0-9]{6,}$/i
+const TRACKING_NUMBER_REGEX = /^[A-Z0-9]{6,}$/i;
 
 const backgroundImageStyle = computed(() => ({
   backgroundImage: 'url("https://img.freepik.com/free-photo/busy-shipping-port-with-containers-trade-action_91128-4581.jpg")',
   loading: 'lazy'
-}))
+}));
 
-const isValidTrackingNumber = computed(() => 
+const isValidTrackingNumber = computed(() =>
   TRACKING_NUMBER_REGEX.test(trackingInput.value.trim())
-)
+);
 
-const shipmentData = computed(() => shipmentStore.shipmentData)
+const shipmentData = computed(() => shipmentStore.shipmentData);
 
-const showNoResultsMessage = computed(() => 
+const showNoResultsMessage = computed(() =>
   showingShipments.value && !isLoading.value && !error.value && !shipmentData.value
-)
+);
 
 const sortedTrackingStages = computed(() => {
-  if (!trackStore.content) return []
+  if (!trackStore.content) return [];
   
-  const stageOrder = ['pendingPackage','packaging', 'transit1', 'transit2', 'delivered']
+  const stageOrder = ['pendingPackage', 'packaging', 'transit1', 'transit2', 'delivered'];
   
   return stageOrder
     .map(key => ({
       key,
       ...(trackStore.content[key] || {}),
     }))
-    .filter(stage => Object.keys(stage).length > 1)
-})
+    .filter(stage => Object.keys(stage).length > 1);
+});
 
 // Event handlers
 async function handleSubmit() {
   const trackingNum = trackingInput.value.trim();
-  const useId = user.value.uid;
-  if (!isValidTrackingNumber.value || isLoading.value) return
+  const userId = user.value.uid;
+  if (!isValidTrackingNumber.value || isLoading.value) return;
   
-  clearData()
-  isLoading.value = true
-  showingShipments.value = true
+  clearData();
+  isLoading.value = true;
+  showingShipments.value = true;
   
   try {
     if (!isLoggedIn.value) {
       await Promise.all([
-      shipmentStore.fetchShipmentData(`User/${useId}/Shipments/${trackingNum}/`),
-      trackStore.fetchTrackingData(docPath.value)
-    ])
+        shipmentStore.fetchShipmentData(`User/${userId}/Shipments/${trackingNum}/`),
+        trackStore.fetchTrackingData(docPath.value)
+      ]);
     }
 
     if (!docPath.value) {
-      throw new Error('Invalid tracking information')
+      throw new Error('Invalid tracking information');
     }
 
     await Promise.all([
       shipmentStore.fetchShipmentData(`Tracking/${trackingNum}/Shipments/${trackingNum}`),
       trackStore.fetchTrackingData(docPath.value)
-    ])
+    ]);
     
     if (!shipmentData.value) {
-      error.value = 'No shipment found with this tracking number.'
+      error.value = 'No shipment found with this tracking number.';
     }
   } catch (e) {
-    error.value = e instanceof Error ? e.message : 'Unable to fetch shipment data. Please try again later.'
-    console.error('Shipment fetch error:', e)
+    error.value = e instanceof Error ? e.message : 'Unable to fetch shipment data. Please try again later.';
+    console.error('Shipment fetch error:', e);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 
 function clearData() {
-  shipmentStore.$reset()
-  trackStore.$reset()
-  showingShipments.value = false
-  error.value = ''
+  shipmentStore.$reset();
+  trackStore.$reset();
+  showingShipments.value = false;
+  error.value = '';
 }
 
 // Cleanup and initialization
 onMounted(() => {
-  clearData()
-})
+  clearData();
+  if (fromTrack?.getTrack) {
+    trackingInput.value = fromTrack.getTrack;
+  }
+  // Automatically submit the form when the page loads
+  if (trackingInput.value.trim()) {
+    handleSubmit(); // Call handleSubmit to perform the search
+  }
+});
+
 
 // Watch for store errors
 watchEffect(() => {
   if (trackStore.error) {
-    error.value = trackStore.error
+    error.value = trackStore.error;
   }
-})
+});
 </script>
+
 
 <style scoped>
 .list-enter-active,
