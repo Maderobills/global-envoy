@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { useFirebaseStore } from "@/stores/firebaseStore";
 import FooterView from "@/components/widgets/singles/FooterView.vue";
-
+import CountrySelector from "@/components/widgets/singles/CountrySelector.vue";
 
 const store = useFirebaseStore();
 const user = computed(() => store.user);
@@ -21,8 +21,12 @@ const handleSignOut = async () => {
     alert("Sign-out failed. Please try again.");
   }
 };
-</script>
 
+const handleCountryChange = (selectedCountry) => {
+  console.log('Selected country:', selectedCountry);
+  // You can add logic here to handle the selected country
+};
+</script>
 
 <template>
   <header class="w-screen h-fit">
@@ -33,19 +37,14 @@ const handleSignOut = async () => {
         </h1>
       </RouterLink>
       <div class="flex space-x-4 text-sm">
-        <div class="h-12 flex justify-center items-center space-x-2 hover:text-slate-900 cursor-pointer">
-          <RouterLink to="/location-search">
+        <RouterLink to="/location-search">
+          <div class="h-12 flex justify-center items-center space-x-2 hover:text-slate-900 cursor-pointer">
             <h5>Find a Location</h5>
-          <i class="fi fi-rs-land-layer-location"></i>
-          </RouterLink>
-        </div>
-        <div class="h-12 flex justify-center items-center space-x-2 hover:text-slate-900 cursor-pointer">
-          <h5>Search</h5>
-          <i class="fi fi-rs-search"></i>
-        </div>
-        <div class="h-12 flex justify-center items-center space-x-2 hover:text-slate-900 cursor-pointer">
-          <h5>Country</h5>
-          <i class="fi fi-rs-earth-americas"></i>
+            <i class="fi fi-rs-land-layer-location"></i>
+          </div>
+        </RouterLink>
+        <div class="h-12 flex  justify-center items-center space-x-2 cursor-pointer">
+          <CountrySelector @update:modelValue="handleCountryChange" />
         </div>
       </div>
     </div>
@@ -94,9 +93,7 @@ const handleSignOut = async () => {
         </div>
         <div class="absolute hidden group-hover:block bg-white shadow-lg mt-0 rounded">
           <RouterLink to="/" class="block px-4 py-2 hover:bg-gray-200">Profile</RouterLink>
-          <RouterLink to="/" class="block px-4 py-2 hover:bg-gray-200 text-red-600" @click.prevent="handleSignOut">
-            Logout
-          </RouterLink>
+          <RouterLink to="/" class="block px-4 py-2 hover:bg-gray-200 text-red-600" @click.prevent="handleSignOut">Logout</RouterLink>
         </div>
       </div>
     </nav>
@@ -105,7 +102,6 @@ const handleSignOut = async () => {
   <main class="h-dvh overflow-y-scroll">
     <Transition name="fade">
       <RouterView />
-
     </Transition>
     <FooterView />
   </main>
