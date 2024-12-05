@@ -85,24 +85,6 @@
             {{ editMode ? "Add Status" : "Submit" }}
           </button>
         </form>
-
-        <!-- Latest Update Display -->
-        <div v-if="latestUpdate && Object.keys(latestUpdate).length > 0" class="mt-6 p-4 bg-gray-50 rounded-md">
-          <h3 class="text-lg font-medium text-gray-900 mb-2">Latest Update</h3>
-          <div class="text-sm text-gray-600">
-            <p><span class="font-medium">Transit Type:</span> {{ latestUpdate.transitType }}</p>
-            <p><span class="font-medium">Location:</span> {{ latestUpdate.location }}</p>
-            <p><span class="font-medium">Status:</span> {{ latestUpdate.status }}</p>
-            <p><span class="font-medium">Date:</span> {{ latestUpdate.date }}</p>
-            <button
-              @click="editUpdate(latestUpdate.transitType)"
-              class="mt-2 px-4 py-1 bg-gray-800 text-white text-sm rounded-md hover:bg-gray-700"
-            >
-              Edit Latest Update
-            </button>
-          </div>
-        </div>
-        <div v-else class="mt-6 text-gray-600">No updates available.</div>
       </div>
     </div>
   </div>
@@ -111,6 +93,7 @@
 <script setup>
 import { useTrackStore } from "@/stores/crudStatusStore";
 import { ref, computed, onMounted } from "vue";
+import Swal from "sweetalert2";
 
 const props = defineProps(["uid", "trackingNum"]);
 const statusStore = useTrackStore();
@@ -138,6 +121,12 @@ onMounted(async () => {
       setFormDataForTransitType(firstTransitType);
     }
   } catch (error) {
+    Swal.fire({
+      title: "Error",
+      text: "Failed to fetch tracking data.",
+      icon: "error",
+      confirmButtonText: "OK",
+    });
     console.error("Failed to fetch tracking data:", error);
   }
 });
@@ -180,7 +169,12 @@ const setFormDataForTransitType = (transitType) => {
 const handleSubmit = async () => {
   try {
     if (!formData.value.transitType) {
-      console.error("Transit Type is required");
+      Swal.fire({
+        title: "Error",
+        text: "Transit Type is required.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
       return;
     }
 
@@ -189,7 +183,12 @@ const handleSubmit = async () => {
     );
 
     if (Object.keys(filteredData).length === 0) {
-      console.error("Form fields cannot all be empty.");
+      Swal.fire({
+        title: "Error",
+        text: "Form fields cannot all be empty.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
       return; // Prevent empty submissions
     }
 
@@ -199,13 +198,31 @@ const handleSubmit = async () => {
     if (editMode.value) {
       await statusStore.updateTrackingData(`/Users/${props.uid}/Shipments/${props.trackingNum}/Tracking/${props.trackingNum}`, updatedData);
       await statusStore.updateTrackingData(`/Tracking/${props.trackingNum}/Shipments/${props.trackingNum}/Tracking/${props.trackingNum}`, updatedData);
+      Swal.fire({
+        title: "Success",
+        text: "Tracking status updated successfully.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
     } else {
       await statusStore.setTrackingData(`/Users/${props.uid}/Shipments/${props.trackingNum}/Tracking/${props.trackingNum}`, updatedData);
       await statusStore.setTrackingData(`/Tracking/${props.trackingNum}/Shipments/${props.trackingNum}/Tracking/${props.trackingNum}`, updatedData);
+      Swal.fire({
+        title: "Success",
+        text: "Tracking status added successfully.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
     }
 
     resetForm();
   } catch (error) {
+    Swal.fire({
+      title: "Error",
+      text: "Failed to submit data.",
+      icon: "error",
+      confirmButtonText: "OK",
+    });
     console.error("Failed to submit data:", error);
   }
 };

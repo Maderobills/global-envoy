@@ -1,5 +1,5 @@
 <template>
-    <div class="modal-overlay">
+    <div class="modal-overlay z-50">
       <div class="modal-content">
         <main>
             <StatusForm :uid="uid" :trackingNum="trackingNum"/>

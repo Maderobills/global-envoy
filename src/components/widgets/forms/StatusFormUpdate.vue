@@ -101,64 +101,41 @@
           {{ editMode ? "Update" : "Submit" }}
         </button>
       </form>
-
-      <!-- Latest Update Display -->
-      <div
-        v-if="latestUpdate && Object.keys(latestUpdate).length > 0"
-        class="mt-6 p-4 bg-gray-50 rounded-md"
-      >
-        <h3 class="text-lg font-medium text-gray-900 mb-2">Latest Update</h3>
-        <div class="text-sm text-gray-600">
-          <p>
-            <span class="font-medium">Transit Type:</span> {{ latestUpdate.transitType }}
-          </p>
-          <p>
-            <span class="font-medium">Location:</span> {{ latestUpdate.location }}
-          </p>
-          <p>
-            <span class="font-medium">Status:</span> {{ latestUpdate.status }}
-          </p>
-          <p>
-            <span class="font-medium">Date:</span> {{ latestUpdate.date }}
-          </p>
-          <button
-            @click="editUpdate(latestUpdate.transitType)"
-            class="mt-2 px-4 py-1 bg-gray-800 text-white text-sm rounded-md hover:bg-gray-700"
-          >
-            Edit Latest Update
-          </button>
-        </div>
-      </div>
-      <div v-else class="mt-6 text-gray-600">No updates available.</div>
     </div>
   </div>
 </template>
 
 <script setup>
+import Swal from 'sweetalert2';
 import { useTrackStore } from "@/stores/crudStatusStore";
 import { ref, computed, onMounted } from "vue";
 
+// Define props, store, and form data
 const props = defineProps(["uid", "trackingNum"]);
-
 const statusStore = useTrackStore();
-
-const statusOptions = ["pending","hold", "success", "failed"];
+const statusOptions = ["pending", "hold", "success", "failed"];
 const formData = ref({ transitType: "", location: "", note: "", date: "", status: "" });
 const editMode = ref(false);
 const latestUpdate = computed(() => statusStore.content);
-
 const userId = props.uid;
 const trackingNum = props.trackingNum || "tracking123";
 
+// Fetch data on mounted
 onMounted(async () => {
   try {
     await statusStore.fetchTrackingData(`/Users/${userId}/Shipments/${trackingNum}/Tracking/${trackingNum}`);
     await statusStore.fetchTrackingData(`/Tracking/${trackingNum}/Shipments/${trackingNum}/Tracking/${trackingNum}`);
   } catch (error) {
-    console.error("Failed to fetch tracking data:", error);
+    Swal.fire({
+      title: 'Error!',
+      text: 'Failed to load tracking data.',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
   }
 });
 
+// Set form data based on transit type
 const setFormDataForTransitType = (transitType) => {
   if (!latestUpdate.value || !latestUpdate.value[transitType]) return;
   const selectedData = latestUpdate.value[transitType];
@@ -171,6 +148,7 @@ const setFormDataForTransitType = (transitType) => {
   };
 };
 
+// Handle transit type change
 const onTransitTypeChange = () => {
   if (formData.value.transitType) {
     setFormDataForTransitType(formData.value.transitType);
@@ -181,6 +159,7 @@ const onTransitTypeChange = () => {
   }
 };
 
+// Handle form submission
 const handleSubmit = async () => {
   try {
     if (!formData.value.transitType) return;
@@ -208,13 +187,24 @@ const handleSubmit = async () => {
 
     formData.value = { transitType: "", location: "", note: "", date: "", status: "" };
     editMode.value = false;
+
+    // Success Alert
+    Swal.fire({
+      title: 'Success!',
+      text: 'Shipping status has been updated successfully.',
+      icon: 'success',
+      confirmButtonText: 'OK'
+    });
   } catch (error) {
     console.error("Failed to submit data:", error);
-  }
-};
 
-const editUpdate = (transitType) => {
-  setFormDataForTransitType(transitType);
-  editMode.value = true;
+    // Error Alert
+    Swal.fire({
+      title: 'Error!',
+      text: 'There was an issue updating the shipping status.',
+      icon: 'error',
+      confirmButtonText: 'Try Again'
+    });
+  }
 };
 </script>

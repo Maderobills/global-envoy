@@ -21,7 +21,7 @@ export const useDataUsersStore = defineStore('dataUsers', {
   },
 
   actions: {
-    async fetchUsers(forceRefresh = false) {
+    async fetchUsers(forceRefresh = true) {
       // Check cache validity
       if (!forceRefresh && this.lastFetched) {
         const cacheAge = Date.now() - this.lastFetched;
@@ -50,21 +50,31 @@ export const useDataUsersStore = defineStore('dataUsers', {
         }));
     
         // Merge new users from both collections
-        const userMap = new Map([...this.users, 
-            ...newUsersFromTracking.map(user => [user.id, user]), 
-            ...newUsersFromUsers.map(user => [user.id, user])
+        const validUsers = this.users.filter(user => user && user.id); // Ensure users in state are valid
+        const userMap = new Map([
+          ...validUsers.map(user => [user.id, user]),
+          ...newUsersFromTracking
+            .filter(user => user && user.id)
+            .map(user => [user.id, user]),
+          ...newUsersFromUsers
+            .filter(user => user && user.id)
+            .map(user => [user.id, user]),
         ]);
+        
+        
         this.users = Array.from(userMap.values());
-    
+        console.log("New users from tracking:", newUsersFromTracking);
+        console.log("New users from users:", newUsersFromUsers);
+        
         // Update lastFetched timestamp and cache
         this.lastFetched = Date.now();
         this.cacheUsers();
-    } catch (err) {
+      } catch (err) {
         this.error = err.message || 'Failed to fetch users';
         console.error('Error fetching users:', err);
-    } finally {
+      } finally {
         this.loading = false;
-    }
+      }
     },
 
     cacheUsers() {
@@ -88,16 +98,25 @@ export const useDataUsersStore = defineStore('dataUsers', {
       }
     }
   },
-
   getters: {
-    userFullNames: state => state.users.map(user => `${user.firstName}? ${user.lastName}?`),
-    
+    userFullNames: state => state.users.map(user => {
+      // Check if user is defined before accessing properties
+      if (!user) {
+        return ''; // Or handle this case appropriately
+      }
+  
+      const firstName = user.firstName || '';
+      const lastName = user.lastName || '';
+      return `${firstName} ${lastName}`.trim();
+    }),
+  
     getUserById: state => id => state.users.find(user => user.id === id),
-    
+  
     getCachedStatus: state => ({
       hasCachedData: state.users.length > 0,
       lastFetched: state.lastFetched,
       cacheAge: state.lastFetched ? Date.now() - state.lastFetched : null,
     })
   },
+  
 });

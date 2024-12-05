@@ -187,6 +187,8 @@ const handleSubmit = async () => {
     };
 
     const firstName = customerId;
+    const lastName = customerId;
+    const uid = trackingNumbers;
 
     console.log("Data to be saved:", { shipmentData, trackingStatus });
 
@@ -200,7 +202,7 @@ const handleSubmit = async () => {
         `Tracking/${shipmentId}/Shipments/${shipmentId}/Tracking/${shipmentId}`
       );
 
-      await setDoc(docRall, { firstName, trackingNumbers: arrayUnion(trackingNumbers) }, { merge: true });
+      await setDoc(docRall, { firstName, lastName, uid, trackingNumbers: arrayUnion(trackingNumbers) }, { merge: true });
       await setDoc(docRefall, shipmentData, { merge: true });
       await setDoc(docTrackall, trackingStatus, { merge: true });
     } else {
