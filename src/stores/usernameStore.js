@@ -35,12 +35,20 @@ export const useDataUsersStore = defineStore('dataUsers', {
       this.error = null;
 
       try {
-        const querySnapshot = await getDocs(collection(db, 'Users'));
-        this.users = querySnapshot.docs.map(doc => ({
+        const [usersSnapshot, trackingSnapshot] = await Promise.all([
+          getDocs(collection(db, 'Users')),
+          getDocs(collection(db, 'Tracking')),
+        ]);
+
+        this.users = usersSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
         }));
-        
+
+        this.tracking = trackingSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
         // Update lastFetched timestamp
         this.lastFetched = Date.now();
         
