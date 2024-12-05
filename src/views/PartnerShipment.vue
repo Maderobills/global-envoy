@@ -1,5 +1,5 @@
 <template>
-    <PartnerShipmentPage/>
+    <PartnerShipmentPage />
   </template>
   
   <script setup>
