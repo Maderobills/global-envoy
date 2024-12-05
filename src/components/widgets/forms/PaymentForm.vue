@@ -98,6 +98,11 @@ const shipmentId = generateTrackingNumber({
   length: 15, // Custom length for the tracking number
 });
 
+const customerId = generateTrackingNumber({
+  prefix: "GLO", // Custom prefix for shipment ID
+  length: 8, // Custom length for the tracking number
+});
+
 const firebaseStore = useFirebaseStore();
 
 const user = computed(() => firebaseStore.user);
@@ -151,6 +156,7 @@ const handleSubmit = async () => {
     // Construct the shipment data object
     const shipmentData = {
       shipmentId,
+      customerId,
       destinationAddress,
       originAddress,
       shipmentDate,
@@ -180,6 +186,8 @@ const handleSubmit = async () => {
       pendingPackage,
     };
 
+    const firstName = customerId;
+
     console.log("Data to be saved:", { shipmentData, trackingStatus });
 
     // Check user login state and save to appropriate Firestore path
@@ -192,7 +200,7 @@ const handleSubmit = async () => {
         `Tracking/${shipmentId}/Shipments/${shipmentId}/Tracking/${shipmentId}`
       );
 
-      await setDoc(docRall, { trackingNumbers: arrayUnion(trackingNumbers) }, { merge: true });
+      await setDoc(docRall, { firstName, trackingNumbers: arrayUnion(trackingNumbers) }, { merge: true });
       await setDoc(docRefall, shipmentData, { merge: true });
       await setDoc(docTrackall, trackingStatus, { merge: true });
     } else {
