@@ -8,7 +8,7 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 export const useDataUsersStore = defineStore('dataUsers', {
   state: () => {
-    // Try to load cached data from localStorage
+    // Load cached data from localStorage
     const cached = localStorage.getItem(CACHE_KEY);
     const initialState = cached ? JSON.parse(cached) : null;
     
@@ -22,7 +22,7 @@ export const useDataUsersStore = defineStore('dataUsers', {
 
   actions: {
     async fetchUsers(forceRefresh = false) {
-      // Check if we have recently cached data
+      // Check cache validity
       if (!forceRefresh && this.lastFetched) {
         const cacheAge = Date.now() - this.lastFetched;
         if (cacheAge < CACHE_DURATION) {
@@ -35,31 +35,36 @@ export const useDataUsersStore = defineStore('dataUsers', {
       this.error = null;
 
       try {
-        const [usersSnapshot, trackingSnapshot] = await Promise.all([
-          getDocs(collection(db, 'Users')),
-          getDocs(collection(db, 'Tracking')),
+        // Fetch data from the 'Tracking' collection
+        const querySnapshot1 = await getDocs(collection(db, 'Tracking'));
+        const newUsersFromTracking = querySnapshot1.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+        }));
+    
+        // Fetch data from the 'Users' collection
+        const querySnapshot2 = await getDocs(collection(db, 'Users'));
+        const newUsersFromUsers = querySnapshot2.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+        }));
+    
+        // Merge new users from both collections
+        const userMap = new Map([...this.users, 
+            ...newUsersFromTracking.map(user => [user.id, user]), 
+            ...newUsersFromUsers.map(user => [user.id, user])
         ]);
-
-        this.users = usersSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        this.tracking = trackingSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        // Update lastFetched timestamp
+        this.users = Array.from(userMap.values());
+    
+        // Update lastFetched timestamp and cache
         this.lastFetched = Date.now();
-        
-        // Cache the fetched data
         this.cacheUsers();
-      } catch (err) {
+    } catch (err) {
         this.error = err.message || 'Failed to fetch users';
         console.error('Error fetching users:', err);
-      } finally {
+    } finally {
         this.loading = false;
-      }
+    }
     },
 
     cacheUsers() {
@@ -85,7 +90,7 @@ export const useDataUsersStore = defineStore('dataUsers', {
   },
 
   getters: {
-    userFullNames: state => state.users.map(user => `${user.firstName} ${user.lastName}`),
+    userFullNames: state => state.users.map(user => `${user.firstName}? ${user.lastName}?`),
     
     getUserById: state => id => state.users.find(user => user.id === id),
     
