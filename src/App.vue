@@ -78,8 +78,8 @@ const toggleDrawer = () => {
             <i class="fi fi-ts-shipping-timed"></i><span>Track</span>
           </RouterLink>
           <div class="absolute hidden group-hover:block bg-white shadow-lg rounded p-2">
-            <RouterLink to="/TrackPackage" class="block px-4 py-2 hover:bg-gray-200">Track Shipment</RouterLink>
-            <RouterLink to="/TrackHistory" class="block px-4 py-2 hover:bg-gray-200">Track History</RouterLink>
+            <RouterLink to="/TrackPackage" class="block px-2 hover:bg-gray-200">Track Shipment</RouterLink>
+            <RouterLink to="/TrackHistory" class="block px-2 hover:bg-gray-200">Track History</RouterLink>
           </div>
         </div>
 
@@ -88,9 +88,9 @@ const toggleDrawer = () => {
           <RouterLink to="/create-shipment" class="flex items-baseline space-x-2">
             <i class="fi fi-tr-box-open"></i><span>Ship</span>
           </RouterLink>
-          <div class="absolute hidden group-hover:block bg-white shadow-lg rounded p-2">
-            <RouterLink to="/create-shipment" class="block px-4 py-2 hover:bg-gray-200">Create Shipment</RouterLink>
-            <RouterLink to="/get-shipment" class="block px-4 py-2 hover:bg-gray-200">Shipping Rates</RouterLink>
+          <div class="absolute hidden group-hover:block bg-white shadow-lg rounded p-2 ">
+            <RouterLink to="/create-shipment" class="block px-2 hover:bg-gray-200">Create Shipment</RouterLink>
+            <RouterLink to="/get-shipment" class="block px-2 hover:bg-gray-200">Shipping Rates</RouterLink>
           </div>
         </div>
 
@@ -100,9 +100,9 @@ const toggleDrawer = () => {
             <i class="fi fi-rr-headset"></i><span>Customer Service</span>
           </RouterLink>
           <div class="absolute hidden group-hover:block bg-white shadow-lg rounded p-2">
-            <RouterLink to="/faqs-page" class="block px-4 py-2 hover:bg-gray-200">FAQs</RouterLink>
-            <RouterLink to="/contact-support" class="block px-4 py-2 hover:bg-gray-200">Contact Support</RouterLink>
-            <RouterLink to="/about-us" class="block px-4 py-2 hover:bg-gray-200">About Us</RouterLink>
+            <RouterLink to="/faqs-page" class="block px-2 hover:bg-gray-200">FAQs</RouterLink>
+            <RouterLink to="/contact-support" class="block px-2 hover:bg-gray-200">Contact Support</RouterLink>
+            <RouterLink to="/about-us" class="block px-2 hover:bg-gray-200">About Us</RouterLink>
           </div>
         </div>
       </div>
