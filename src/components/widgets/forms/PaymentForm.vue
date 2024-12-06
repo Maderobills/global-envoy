@@ -82,7 +82,10 @@ import { useCalcStore } from "@/stores/calcStore";
 import { generateTrackingNumber } from "@/stores/trackGenerator.js";
 import { computed } from "vue";
 import { useFirebaseStore } from "@/stores/firebaseStore";
-import Swal from "sweetalert2";
+import Swal from "sweetalert2"; 
+import PaystackPop from '@paystack/inline-js'
+
+
 
 
 const db = getFirestore(firebaseApp);
@@ -232,6 +235,15 @@ const handleSubmit = async () => {
         // Copy the tracking number to clipboard
         navigator.clipboard.writeText(trackingNumbers).then(() => {
           Swal.fire('Copied!', 'Tracking number has been copied to clipboard.', 'success');
+          // Reset page (reload current page)
+          this.$router.replace({ path: this.$router.currentRoute.path });
+
+          // Reset all form data in stores
+          destinationStore.formData = {}; // Reset destination form
+          packageStore.formData = {}; // Reset package form
+          additionalStore.formData = {}; // Reset additional form
+          shipmentStore.formData = {}; // Reset shipment form
+          calcStore.quote = {}; // Reset calculation data
         }).catch((err) => {
           Swal.fire('Error', 'Failed to copy tracking number. Please copy it manually.', 'error');
         });
