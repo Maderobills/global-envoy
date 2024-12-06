@@ -56,7 +56,7 @@ const toggleDrawer = () => {
 
   <!-- Desktop Header -->
   <header class="hidden md:block w-screen">
-    <div class="bg-bgcolor text-white w-full h-14 flex justify-between items-center px-10">
+    <div class="bg-bgcolor text-white w-full h-14 flex justify-evenly items-center px-10">
       <RouterLink to="/" class="text-2xl font-bold">
         Global<span class="font-extrabold text-slate-900">Envoy</span>
       </RouterLink>
