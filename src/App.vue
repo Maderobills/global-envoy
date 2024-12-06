@@ -39,7 +39,7 @@ const toggleDrawer = () => {
 </script>
 <template>
   <!-- Mobile Header -->
-  <header class="md:hidden bg-bgcolor text-white w-full h-14 flex justify-between items-center px-4">
+  <header class="md:hidden bg-bgcolor text-white w-full h-14 flex justify-between items-center px-4 z-40">
     <RouterLink to="/" class="text-2xl font-bold">
       Global<span class="font-extrabold text-slate-900">Envoy</span>
     </RouterLink>
@@ -77,9 +77,9 @@ const toggleDrawer = () => {
           <RouterLink to="/" class="flex items-baseline space-x-2">
             <i class="fi fi-ts-shipping-timed"></i><span>Track</span>
           </RouterLink>
-          <div class="absolute hidden group-hover:block bg-white shadow-lg rounded mt-2 p-2">
-            <RouterLink to="/TrackPackage" class="block px-4 py-2 hover:bg-gray-200">Track Shipment</RouterLink>
-            <RouterLink to="/TrackHistory" class="block px-4 py-2 hover:bg-gray-200">Track History</RouterLink>
+          <div class="absolute hidden group-hover:block bg-white shadow-lg rounded p-2">
+            <RouterLink to="/TrackPackage" class="block px-2 hover:bg-gray-200">Track Shipment</RouterLink>
+            <RouterLink to="/TrackHistory" class="block px-2 hover:bg-gray-200">Track History</RouterLink>
           </div>
         </div>
 
@@ -88,9 +88,9 @@ const toggleDrawer = () => {
           <RouterLink to="/create-shipment" class="flex items-baseline space-x-2">
             <i class="fi fi-tr-box-open"></i><span>Ship</span>
           </RouterLink>
-          <div class="absolute hidden group-hover:block bg-white shadow-lg rounded mt-2 p-2">
-            <RouterLink to="/create-shipment" class="block px-4 py-2 hover:bg-gray-200">Create Shipment</RouterLink>
-            <RouterLink to="/get-shipment" class="block px-4 py-2 hover:bg-gray-200">Shipping Rates</RouterLink>
+          <div class="absolute hidden group-hover:block bg-white shadow-lg rounded  p-2">
+            <RouterLink to="/create-shipment" class="block px-2 hover:bg-gray-200">Create Shipment</RouterLink>
+            <RouterLink to="/get-shipment" class="block px-2 hover:bg-gray-200">Shipping Rates</RouterLink>
           </div>
         </div>
 
@@ -99,14 +99,14 @@ const toggleDrawer = () => {
           <RouterLink to="/customer" class="flex items-baseline space-x-2">
             <i class="fi fi-rr-headset"></i><span>Customer Service</span>
           </RouterLink>
-          <div class="absolute hidden group-hover:block bg-white shadow-lg rounded mt-2 p-2">
-            <RouterLink to="/faqs-page" class="block px-4 py-2 hover:bg-gray-200">FAQs</RouterLink>
-            <RouterLink to="/contact-support" class="block px-4 py-2 hover:bg-gray-200">Contact Support</RouterLink>
-            <RouterLink to="/about-us" class="block px-4 py-2 hover:bg-gray-200">About Us</RouterLink>
+          <div class="absolute hidden group-hover:block bg-white shadow-lg rounded  p-2">
+            <RouterLink to="/faqs-page" class="block px-2 hover:bg-gray-200">FAQs</RouterLink>
+            <RouterLink to="/contact-support" class="block px-2 hover:bg-gray-200">Contact Support</RouterLink>
+            <RouterLink to="/about-us" class="block px-2 hover:bg-gray-200">About Us</RouterLink>
           </div>
         </div>
         <RouterLink to="/admin" class="flex items-baseline space-x-2">
-          <i class="fi fi-rr-admin-alt"></i><span>Admim Dashboard</span>
+          <i class="fi fi-rr-admin-alt"></i><span>Admin Dashboard</span>
           </RouterLink>
       </div>
 
@@ -120,7 +120,7 @@ const toggleDrawer = () => {
             <img src="" alt="User profile" class="w-8 h-8 rounded-full bg-gray-300" />
             <span class="font-medium">{{ user.firstName }} {{ user.lastName }}</span>
           </div>
-          <div class="absolute hidden group-hover:block bg-white shadow-lg rounded mt-2 right-0 p-2">
+          <div class="absolute hidden group-hover:block bg-white shadow-lg rounded right-0 p-2">
             <RouterLink to="/profile" class="block px-4 py-2 hover:bg-gray-200">Profile</RouterLink>
             <button @click="handleSignOut" class="block w-full text-left px-4 py-2 hover:bg-gray-200 text-red-600">
               Logout
