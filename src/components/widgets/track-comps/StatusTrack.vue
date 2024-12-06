@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="h-10 border-l-4 flex items-center rounded space-x-2"
+    class="min-h-10 border-l-4 flex items-start sm:items-center rounded p-2 sm:p-0"
     :class="{
       'border-emerald-500': status === 'success',
       'border-yellow-500': status === 'pending',
@@ -8,19 +8,26 @@
       'border-red-500': status === 'failed'
     }"
   >
-    <i class="fi fi-ts-bullet flex items-center text-lg pl-4"></i>
-    <div class="bg-white flex items-center space-x-2 text-slate-600">
-      <h4>{{ note }}</h4>
-      <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-      <h4>{{ location }}</h4>
-      <i class="fi fi-tr-horizontal-rule flex items-center"></i>
-      <h3>{{ date }}</h3>
+    <i class="fi fi-ts-bullet flex items-center text-base sm:text-lg pl-2 sm:pl-4 mt-1 sm:mt-0"></i>
+    <div class="bg-white flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-slate-600 text-sm sm:text-base">
+      <div class="flex items-center gap-2">
+        <h4 class="line-clamp-2 sm:line-clamp-1">{{ note }}</h4>
+        <i class="fi fi-tr-horizontal-rule hidden sm:flex items-center"></i>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <h4 class="line-clamp-1">{{ location }}</h4>
+        <i class="fi fi-tr-horizontal-rule hidden sm:flex items-center"></i>
+      </div>
+      
+      <h3 class="text-xs sm:text-base text-slate-500">{{ date }}</h3>
     </div>
   </div>
 </template>
 
 <script>
 export default {
+  name: 'StatusTrack',
   props: {
     note: {
       type: String,

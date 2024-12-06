@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto p-6 bg-gray-50 h-3/5">
+  <div class="container mx-auto p-6 bg-gray-50">
     <!-- Header Section -->
     <div class="flex items-center justify-center gap-3 mb-8">
       <h1 class="text-3xl font-bold text-slate-900 text-center">FAQs</h1>
@@ -91,7 +91,32 @@ export default {
   },
 };
 </script>
+<style scoped>
+.card {
+  background-color: white;
+  border-radius: 0.5rem; /* Rounded corners */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
 
-<style>
+.card-header {
+  background-color: #f9fafb; /* Light background for header */
+  border-radius: 0.5rem 0.5rem 0 0; /* Rounded top corners */
+}
 
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .container {
+    padding: 1.5rem; /* Increase padding for mobile */
+  }
+
+  .card {
+    margin-bottom: 1rem; /* Space between cards */
+  }
+}
+
+@media (min-width: 640px) {
+  .card {
+    margin-bottom: 0; /* Remove margin on larger screens */
+  }
+}
 </style>

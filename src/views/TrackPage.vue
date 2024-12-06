@@ -1,34 +1,37 @@
 <template>
   <main class="min-h-screen flex flex-col">
-    <div class="relative h-80">
-      <!-- Hero section with optimized background loading -->
+    <!-- Hero Section -->
+    <div class="relative h-60 sm:h-80">
+      <!-- Hero background with responsive height -->
       <div 
         class="absolute inset-0 bg-cover bg-center"
         :style="backgroundImageStyle"
         aria-hidden="true"
       />
-      <div class="relative h-full flex flex-col items-center justify-center space-y-6 bg-black/40 px-4">
-        <h1 class="text-4xl font-bold text-white">Track Your Shipment</h1>
+      <div class="relative h-full flex flex-col items-center justify-center space-y-4 sm:space-y-6 bg-black/40 px-4">
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center">
+          Track Your Shipment
+        </h1>
         
-        <!-- Search form with improved accessibility -->
-        <form @submit.prevent="handleSubmit" class="w-full max-w-2xl">
-          <div class="flex w-full bg-white p-2 rounded shadow-lg">
+        <!-- Responsive search form -->
+        <form @submit.prevent="handleSubmit" class="w-full max-w-2xl px-2 sm:px-4">
+          <div class="flex flex-col sm:flex-row w-full bg-white p-2 rounded shadow-lg gap-2 sm:gap-0">
             <input
               v-model="trackingInput"
               type="text"
               placeholder="Enter your tracking number"
               :disabled="isLoading"
-              class="flex-1 h-12 px-4 text-slate-900 text-md outline-none rounded-s"
+              class="flex-1 h-10 sm:h-12 px-4 text-slate-900 text-sm sm:text-md outline-none rounded sm:rounded-s"
               :class="{ 'opacity-50': isLoading }"
             />
             <button
               type="submit"
               :disabled="isLoading || !trackingInput"
-              class="transition bg-slate-900 px-10 font-semibold rounded text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-800"
+              class="transition bg-slate-900 py-2 sm:py-0 px-6 sm:px-10 font-semibold rounded sm:rounded-s-none text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-800"
             >
-              <span v-if="isLoading">
+              <span v-if="isLoading" class="flex items-center justify-center">
                 <span class="inline-block animate-spin mr-2">⟳</span>
-                Loading...
+                <span class="whitespace-nowrap">Loading...</span>
               </span>
               <span v-else>Track</span>
             </button>
@@ -37,17 +40,22 @@
       </div>
     </div>
 
-    <!-- Results section with improved error handling and loading states -->
-    <section class="w-4/5 max-w-7xl mx-auto px-4 pt-8 space-y-6 my-5" aria-live="polite">
+    <!-- Results section -->
+    <section 
+      class="w-full sm:w-11/12 md:w-4/5 max-w-7xl mx-auto px-4 pt-6 sm:pt-8 space-y-4 sm:space-y-6 my-3 sm:my-5" 
+      aria-live="polite"
+    >
+      <!-- Error message -->
       <div 
         v-if="error" 
         id="error-message"
         role="alert"
-        class="p-4 bg-red-50 border border-red-200 rounded text-red-700"
+        class="p-3 sm:p-4 bg-red-50 border border-red-200 rounded text-red-700 text-sm sm:text-base"
       >
         {{ error }}
       </div>
 
+      <!-- Shipment details -->
       <Suspense>
         <template #default>
           <DashTrack
@@ -57,29 +65,35 @@
             :delivered-from="shipmentData.destinationAddress"
             :delivered-to="shipmentData.originAddress"
             :estimated-delivery="shipmentData.estimateDeliveryDate"
+            class="w-full overflow-x-auto"
           />
         </template>
         <template #fallback>
-          <div class="animate-pulse space-y-4">
-            <div class="h-4 bg-slate-200 rounded w-3/4"></div>
-            <div class="h-4 bg-slate-200 rounded w-1/2"></div>
+          <div class="animate-pulse space-y-3 sm:space-y-4">
+            <div class="h-3 sm:h-4 bg-slate-200 rounded w-3/4"></div>
+            <div class="h-3 sm:h-4 bg-slate-200 rounded w-1/2"></div>
           </div>
         </template>
       </Suspense>
       
+      <!-- No results message -->
       <div 
         v-if="showNoResultsMessage" 
-        class="text-center text-gray-500 py-12"
+        class="text-center text-gray-500 py-8 sm:py-12 text-sm sm:text-base"
       >
         No shipments found for this tracking number.
       </div>
     </section>
 
-    <section aria-label="Tracking timeline" class="w-4/5 max-w-7xl mx-auto px-10 my-5">
+    <!-- Timeline section -->
+    <section 
+      aria-label="Tracking timeline" 
+      class="w-full sm:w-11/12 md:w-4/5 max-w-7xl mx-auto px-4 sm:px-10 my-3 sm:my-5"
+    >
       <TransitionGroup 
         name="list"
         tag="div"
-        class="space-y-4"
+        class="space-y-3 sm:space-y-4"
       >
         <StatusTrack
           v-for="status in sortedTrackingStages"
@@ -91,9 +105,9 @@
         />
       </TransitionGroup>
     </section>
-
   </main>
 </template>
+
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watchEffect } from 'vue';

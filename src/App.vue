@@ -1,13 +1,17 @@
 <script setup>
-import { computed } from "vue";
+import { ref, computed } from "vue";
 import { useFirebaseStore } from "@/stores/firebaseStore";
 import FooterView from "@/components/widgets/singles/FooterView.vue";
 import CountrySelector from "@/components/widgets/singles/CountrySelector.vue";
+import DrawerMenu from "@/components/widgets/singles/DrawerMenu.vue";
 
+// Store and state management
 const store = useFirebaseStore();
 const user = computed(() => store.user);
 const isLoggedIn = computed(() => store.user.firstName !== "Guest");
+const isDrawerOpen = ref(false);
 
+// Methods
 const handleSignOut = async () => {
   try {
     await store.signOut();
@@ -16,6 +20,7 @@ const handleSignOut = async () => {
       firstName: "Guest",
       lastName: "User",
     });
+    console.log("User signed out successfully.");
   } catch (error) {
     console.error("Error during sign-out:", error);
     alert("Sign-out failed. Please try again.");
@@ -23,58 +28,78 @@ const handleSignOut = async () => {
 };
 
 const handleCountryChange = (selectedCountry) => {
-  console.log('Selected country:', selectedCountry);
-  // You can add logic here to handle the selected country
+  console.log("Selected country:", selectedCountry);
+  // Logic for handling country changes
+};
+
+const toggleDrawer = () => {
+  console.log("Toggling drawer:", isDrawerOpen.value);
+  isDrawerOpen.value = !isDrawerOpen.value;
 };
 </script>
-
 <template>
-  <header class="w-screen h-fit">
-    <div class="bg-bgcolor text-white w-full h-14 flex justify-evenly items-center">
-      <RouterLink to="/">
-        <h1 class="text-2xl">
-          Global<span class="font-extrabold text-slate-900">Envoy</span>
-        </h1>
+  <!-- Mobile Header -->
+  <header class="md:hidden bg-bgcolor text-white w-full h-14 flex justify-between items-center px-4">
+    <RouterLink to="/" class="text-2xl font-bold">
+      Global<span class="font-extrabold text-slate-900">Envoy</span>
+    </RouterLink>
+    <button
+      @click="toggleDrawer"
+      class="text-2xl"
+      aria-label="Open navigation menu"
+    >
+      ☰
+    </button>
+    <!-- Drawer Menu -->
+    <DrawerMenu :is-open="isDrawerOpen" @update:isOpen="isDrawerOpen = $event" />
+  </header>
+
+  <!-- Desktop Header -->
+  <header class="hidden md:block w-screen">
+    <div class="bg-bgcolor text-white w-full h-14 flex justify-between items-center px-10">
+      <RouterLink to="/" class="text-2xl font-bold">
+        Global<span class="font-extrabold text-slate-900">Envoy</span>
       </RouterLink>
-      <div class="flex space-x-4 text-sm">
-        <RouterLink to="/location-search">
-          <div class="h-12 flex justify-center items-center space-x-2 hover:text-slate-900 cursor-pointer">
-            <h5>Find a Location</h5>
-            <i class="fi fi-rs-land-layer-location"></i>
-          </div>
+      <div class="flex space-x-6 items-center">
+        <RouterLink to="/location-search" class="flex items-center space-x-2 hover:text-slate-900">
+          <span>Find a Location</span>
+          <i class="fi fi-rs-land-layer-location"></i>
         </RouterLink>
-        <div class="h-12 flex  justify-center items-center space-x-2 cursor-pointer">
-          <CountrySelector @update:modelValue="handleCountryChange" />
-        </div>
+        <CountrySelector @update:modelValue="handleCountryChange" />
       </div>
     </div>
-    <nav class="w-full h-14 bg-white drop-shadow-sm flex justify-around items-center relative z-50">
+
+    <!-- Desktop Navigation -->
+    <nav class="w-full h-14 bg-white shadow-sm flex justify-around items-center">
       <div class="flex space-x-10">
+        <!-- Track Section -->
         <div class="relative group">
           <RouterLink to="/" class="flex items-baseline space-x-2">
             <i class="fi fi-ts-shipping-timed"></i><span>Track</span>
           </RouterLink>
-          <div class="absolute hidden group-hover:block bg-white shadow-lg mt-0 rounded">
+          <div class="absolute hidden group-hover:block bg-white shadow-lg rounded mt-2 p-2">
             <RouterLink to="/TrackPackage" class="block px-4 py-2 hover:bg-gray-200">Track Shipment</RouterLink>
-            <RouterLink to="/TrackPackage" class="block px-4 py-2 hover:bg-gray-200">Track History</RouterLink>
+            <RouterLink to="/TrackHistory" class="block px-4 py-2 hover:bg-gray-200">Track History</RouterLink>
           </div>
         </div>
 
+        <!-- Ship Section -->
         <div class="relative group">
           <RouterLink to="/create-shipment" class="flex items-baseline space-x-2">
             <i class="fi fi-tr-box-open"></i><span>Ship</span>
           </RouterLink>
-          <div class="absolute hidden group-hover:block bg-white shadow-lg mt-0 rounded">
+          <div class="absolute hidden group-hover:block bg-white shadow-lg rounded mt-2 p-2">
             <RouterLink to="/create-shipment" class="block px-4 py-2 hover:bg-gray-200">Create Shipment</RouterLink>
             <RouterLink to="/get-shipment" class="block px-4 py-2 hover:bg-gray-200">Shipping Rates</RouterLink>
           </div>
         </div>
 
+        <!-- Customer Service -->
         <div class="relative group">
           <RouterLink to="/customer" class="flex items-baseline space-x-2">
             <i class="fi fi-rr-headset"></i><span>Customer Service</span>
           </RouterLink>
-          <div class="absolute hidden group-hover:block bg-white shadow-lg mt-0 rounded">
+          <div class="absolute hidden group-hover:block bg-white shadow-lg rounded mt-2 p-2">
             <RouterLink to="/faqs-page" class="block px-4 py-2 hover:bg-gray-200">FAQs</RouterLink>
             <RouterLink to="/contact-support" class="block px-4 py-2 hover:bg-gray-200">Contact Support</RouterLink>
             <RouterLink to="/about-us" class="block px-4 py-2 hover:bg-gray-200">About Us</RouterLink>
@@ -82,23 +107,28 @@ const handleCountryChange = (selectedCountry) => {
         </div>
       </div>
 
-      <!-- Conditional Rendering for User Login -->
-      <div v-if="!isLoggedIn">
-        <RouterLink to="/sign-in">Customer Portal Logins</RouterLink>
-      </div>
-      <div v-else class="relative group">
-        <div class="flex space-x-3 items-center cursor-pointer">
-          <img src="" alt="User profile" class="w-8 h-8 rounded-full" />
-          <h3 class="font-medium text-slate-600">{{ user.firstName }} {{ user.lastName }}</h3>
+      <!-- User Section -->
+      <div>
+        <div v-if="!isLoggedIn">
+          <RouterLink to="/sign-in" class="hover:underline">Customer Portal Login</RouterLink>
         </div>
-        <div class="absolute hidden group-hover:block bg-white shadow-lg mt-0 rounded">
-          <RouterLink to="/" class="block px-4 py-2 hover:bg-gray-200">Profile</RouterLink>
-          <RouterLink to="/" class="block px-4 py-2 hover:bg-gray-200 text-red-600" @click.prevent="handleSignOut">Logout</RouterLink>
+        <div v-else class="relative group">
+          <div class="flex items-center space-x-3 cursor-pointer">
+            <img src="" alt="User profile" class="w-8 h-8 rounded-full bg-gray-300" />
+            <span class="font-medium">{{ user.firstName }} {{ user.lastName }}</span>
+          </div>
+          <div class="absolute hidden group-hover:block bg-white shadow-lg rounded mt-2 right-0 p-2">
+            <RouterLink to="/profile" class="block px-4 py-2 hover:bg-gray-200">Profile</RouterLink>
+            <button @click="handleSignOut" class="block w-full text-left px-4 py-2 hover:bg-gray-200 text-red-600">
+              Logout
+            </button>
+          </div>
         </div>
       </div>
     </nav>
   </header>
 
+  <!-- Main Content -->
   <main class="h-dvh overflow-y-scroll">
     <Transition name="fade">
       <RouterView />
@@ -106,17 +136,26 @@ const handleCountryChange = (selectedCountry) => {
     <FooterView />
   </main>
 </template>
+<style scoped>
+@import "@flaticon/flaticon-uicons/css/all/all.css";
 
-<style>
-@import '@flaticon/flaticon-uicons/css/all/all.css';
-
+/* Transition Effects */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.5s ease;
+  transition: opacity 0.3s ease;
 }
-
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+/* Drawer Menu */
+.drawer {
+  @apply fixed top-0 left-[-250px] w-[250px] h-full bg-white transition-all duration-300 ease-in-out;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+.drawer.open {
+  @apply left-0;
 }
 </style>
