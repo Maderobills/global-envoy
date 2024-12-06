@@ -84,6 +84,17 @@ const closeDrawer = () => {
           </RouterLink>
         </div>
 
+        <div class="border-b pb-4">
+          
+          <RouterLink
+            to="/admin"
+            class="block py-2 hover:bg-gray-100"
+            @click="closeDrawer"
+          >
+            <i class="fi fi-tr-admin-alt"></i>Admin Dashboard
+          </RouterLink>
+        </div>
+
         <!-- Shipping Links -->
         <div class="border-b pb-4">
           <h3 class="font-semibold mb-2 text-slate-700">Ship</h3>
