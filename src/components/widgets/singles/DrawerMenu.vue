@@ -45,7 +45,7 @@ const closeDrawer = () => {
 
     <!-- Drawer Content -->
     <div
-      class="absolute top-0 left-0 w-[80%] max-w-[400px] h-full bg-bgslate shadow-lg transform transition-transform duration-300 ease-in-out"
+      class="absolute top-0 left-0 w-[80%] max-w-[400px] h-full overflow-y-scroll bg-bgslate shadow-lg transform transition-transform duration-300 ease-in-out"
     >
       <!-- Close Button -->
       <button
@@ -128,7 +128,7 @@ const closeDrawer = () => {
             class="block py-2 hover:bg-gray-100"
             @click="closeDrawer"
           >
-            <i class="fi fi-rr-headset"></i>FAQs
+            <i class="fi fi-rr-comments-question"></i>FAQs
           </RouterLink>
           <RouterLink
             to="/contact-support"
