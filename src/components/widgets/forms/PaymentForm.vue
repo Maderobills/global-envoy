@@ -1,76 +1,35 @@
 <template>
   <div class="space-y-6">
+    <!-- Card Number Section -->
     <div>
       <label class="block text-sm font-medium mb-2">Card Number</label>
-      <input
-        :value="store.formData.cardNumber"
-        @input="store.updateField('cardNumber', $event.target.value)"
-        type="text"
-        maxlength="19"
-        class="w-full p-3 border rounded"
-        :class="{ 'border-red-500': store.errors.cardNumber }"
-        placeholder="**** **** **** ****"
-      />
-      <p v-if="store.errors.cardNumber" class="text-red-500 text-sm mt-1">
-        {{ store.errors.cardNumber }}
+      <div id="card-element" class="w-full p-3 border rounded">
+        <!-- Stripe Card Element will be mounted here -->
+      </div>
+      <p v-if="paymentError" class="text-red-500 text-sm mt-1">
+        {{ paymentError }}
       </p>
     </div>
 
-    <div class="grid grid-cols-2 gap-4">
-      <div>
-        <label class="block text-sm font-medium mb-2">Expiry Date</label>
-        <input
-          :value="store.formData.expiryDate"
-          @input="store.updateField('expiryDate', $event.target.value)"
-          type="text"
-          maxlength="5"
-          class="w-full p-3 border rounded"
-          :class="{ 'border-red-500': store.errors.expiryDate }"
-          placeholder="MM/YY"
-        />
-        <p v-if="store.errors.expiryDate" class="text-red-500 text-sm mt-1">
-          {{ store.errors.expiryDate }}
-        </p>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-2">CVV</label>
-        <input
-          :value="store.formData.cvv"
-          @input="store.updateField('cvv', $event.target.value)"
-          type="text"
-          maxlength="4"
-          class="w-full p-3 border rounded"
-          :class="{ 'border-red-500': store.errors.cvv }"
-          placeholder="***"
-        />
-        <p v-if="store.errors.cvv" class="text-red-500 text-sm mt-1">
-          {{ store.errors.cvv }}
-        </p>
-      </div>
-    </div>
-
-    <div class="flex space-x-4">
-      <div class="w-full flex justify-between gap-4">
-        <button
-          @click="store.resetForm"
-          class="bg-gray-500 text-white py-3 px-6 rounded hover:bg-gray-600 transition-colors"
-        >
-          Reset
-        </button>
-        <button
-          @click="handleSubmit"
-          class="bg-emerald-500 text-white py-3 px-6 rounded hover:bg-emerald-600 transition-colors"
-        >
-          Submit
-        </button>
-      </div>
+    <div class="flex justify-between gap-4 flex-row-reverse">
+      <button
+        @click="handleSubmit"
+        class="bg-emerald-500 text-white py-3 px-6 rounded hover:bg-emerald-600 transition-colors"
+        :disabled="loading"
+      >
+        Submit
+      </button>
+      <button
+        @click="handleReset"
+        class="bg-gray-500 text-white py-3 px-6 rounded hover:bg-gray-600 transition-colors"
+      >
+        Reset
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { useCreditCardStore } from "@/stores/paymentStore";
 import { useDestinationStore } from "@/stores/destinationStore";
 import { usePackageStore } from "@/stores/packageStore";
 import { useAdditionalStore } from "@/stores/additionalStore";
@@ -80,13 +39,10 @@ import { getFirestore } from "firebase/firestore";
 import { firebaseApp } from "@/firebase";
 import { useCalcStore } from "@/stores/calcStore";
 import { generateTrackingNumber } from "@/stores/trackGenerator.js";
-import { computed } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useFirebaseStore } from "@/stores/firebaseStore";
-import Swal from "sweetalert2"; 
-import PaystackPop from '@paystack/inline-js'
-
-
-
+import Swal from "sweetalert2";
+import { useCreditCardStore } from "@/stores/paymentStore";
 
 const db = getFirestore(firebaseApp);
 const store = useCreditCardStore();
@@ -112,6 +68,7 @@ const user = computed(() => firebaseStore.user);
 const isLoggedIn = computed(() => !!user.value?.uid);
 const userId = computed(() => user.value?.uid);
 
+
 const validateDestinationStore = () => {
   const { toCountry, toCity, fromCountry, fromCity } = destinationStore.formData;
 
@@ -136,6 +93,14 @@ const validatePackageStore = () => {
   }
 };
 
+const creditCardStore = useCreditCardStore();
+const paymentError = ref("");
+const loading = ref(false);
+
+// Mount Stripe Card Element
+onMounted(() => {
+  creditCardStore.initializeStripe("card-element"); // Mount Stripe Card Element
+});
 
 const handleSubmit = async () => {
   try {
@@ -193,7 +158,21 @@ const handleSubmit = async () => {
     const lastName = customerId;
     const uid = trackingNumbers;
 
-    console.log("Data to be saved:", { shipmentData, trackingStatus });
+        // Handle Stripe payment
+    const token = await creditCardStore.validateCard();
+    if (!token) {
+      throw new Error("Card validation failed. Please check your card details.");
+    }
+
+    // Define payment data
+    const paymentData = {
+      paymentMethodId: token.id, // or this.paymentMethodId
+      amount: parseFloat(calcStore.quote.totalCost), // Replace with actual amount
+      currency: "usd", // Replace with your currency
+      status: "pending",
+      timestamp: shipmentDate,
+    };
+
 
     // Check user login state and save to appropriate Firestore path
     if (!userId.value) {
@@ -208,6 +187,8 @@ const handleSubmit = async () => {
       await setDoc(docRall, { firstName, lastName, uid, trackingNumbers: arrayUnion(trackingNumbers) }, { merge: true });
       await setDoc(docRefall, shipmentData, { merge: true });
       await setDoc(docTrackall, trackingStatus, { merge: true });
+      // Save payment data here
+      await setDoc(doc(db, `Tracking/${shipmentId}/Payments/${shipmentId}`), paymentData, { merge: true });
     } else {
       // Save to user-specific tracking collection
       const docR = doc(db, `Users/${userId.value}`);
@@ -220,6 +201,8 @@ const handleSubmit = async () => {
       await setDoc(docR, { trackingNumbers: arrayUnion(trackingNumbers) }, { merge: true });
       await setDoc(docRef, shipmentData, { merge: true });
       await setDoc(docTrack, trackingStatus, { merge: true });
+      // Save payment data here
+      await setDoc(doc(db, `Users/${userId.value}/Shipments/${shipmentId}/Payments/${shipmentId}`), paymentData, { merge: true });
     }
 
     // Show success alert using SweetAlert2
@@ -235,21 +218,15 @@ const handleSubmit = async () => {
         // Copy the tracking number to clipboard
         navigator.clipboard.writeText(trackingNumbers).then(() => {
           Swal.fire('Copied!', 'Tracking number has been copied to clipboard.', 'success');
-          // Reset page (reload current page)
-          this.$router.replace({ path: this.$router.currentRoute.path });
-
-          // Reset all form data in stores
-          destinationStore.formData = {}; // Reset destination form
-          packageStore.formData = {}; // Reset package form
-          additionalStore.formData = {}; // Reset additional form
-          shipmentStore.formData = {}; // Reset shipment form
-          calcStore.quote = {}; // Reset calculation data
         }).catch((err) => {
           Swal.fire('Error', 'Failed to copy tracking number. Please copy it manually.', 'error');
         });
       }
     });
-
+    const handleReset = () => {
+  paymentError.value = "";
+  creditCardStore.resetForm();
+};
     console.log("Data saved successfully!");
   } catch (error) {
     console.error("Error submitting form:", error.message);
@@ -262,6 +239,4 @@ const handleSubmit = async () => {
     });
   }
 };
-
-
 </script>

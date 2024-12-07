@@ -14,7 +14,7 @@ export const useCreditCardStore = defineStore("paymentStore", {
   actions: {
     // Initialize Stripe and Stripe Elements
     async initializeStripe() {
-      const stripe = await loadStripe("your-publishable-key-here"); // Replace with your Stripe public key
+      const stripe = await loadStripe("pk_test_51QTBCuGRH1ABoQcEIR4cQiRAkiMHflDo5xRHLbLQCoDX6KH9HZIzZw2mH22Z29ctf10WakXLtEjk8ZdR8RrbnPaK00L1hB6X7I"); // Replace with your Stripe public key
       if (!stripe) {
         this.error = "Stripe failed to load.";
         return;
