@@ -105,6 +105,9 @@ const toggleDrawer = () => {
             <RouterLink to="/about-us" class="block px-2 hover:bg-gray-200">About Us</RouterLink>
           </div>
         </div>
+        <RouterLink to="/admin" class="flex items-baseline space-x-2">
+            <i class="fi fi-tr-admin-alt"></i><span>Admin Dashboard</span>
+          </RouterLink>
       </div>
 
       <!-- User Section -->
