@@ -1,15 +1,23 @@
 <template>
-    <main class="flex grid-cols-3 gap-10 w-full justify-center items-center h-1/2 p-6">
+    <main 
+        class="grid gap-6 w-1/2 justify-center justify-self-center items-center h-1/2 p-6"
+        :class="{
+            'grid-cols-1': true, /* Default for smaller screens */
+            'sm:grid-cols-2': true, /* Two columns for small screens and up */
+            'lg:grid-cols-3': true /* Three columns for large screens and up */
+        }"
+    >
         <CardComp
-                v-for="details in cardDetails"
-                :key="details.id"
-                :icon="details.icon"
-                :title="details.title"
-                :desc="details.desc"
-                @click="handleCardClick(details.toPath)"
-            />
+            v-for="details in cardDetails"
+            :key="details.id"
+            :icon="details.icon"
+            :title="details.title"
+            :desc="details.desc"
+            @click="handleCardClick(details.toPath)"
+        />
     </main>
 </template>
+
 <script setup>
 import { ref } from 'vue';
 import CardComp from './singles/CardComp.vue';
