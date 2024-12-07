@@ -39,7 +39,7 @@ const toggleDrawer = () => {
 </script>
 <template>
   <!-- Mobile Header -->
-  <header class="md:hidden bg-bgcolor text-white w-full h-14 flex justify-between items-center px-4">
+  <header class="md:hidden bg-bgcolor text-white w-full h-14 flex justify-between items-center px-4 z-40">
     <RouterLink to="/" class="text-2xl font-bold">
       Global<span class="font-extrabold text-slate-900">Envoy</span>
     </RouterLink>
@@ -88,7 +88,7 @@ const toggleDrawer = () => {
           <RouterLink to="/create-shipment" class="flex items-baseline space-x-2">
             <i class="fi fi-tr-box-open"></i><span>Ship</span>
           </RouterLink>
-          <div class="absolute hidden group-hover:block bg-white shadow-lg rounded p-2 ">
+          <div class="absolute hidden group-hover:block bg-white shadow-lg rounded  p-2">
             <RouterLink to="/create-shipment" class="block px-2 hover:bg-gray-200">Create Shipment</RouterLink>
             <RouterLink to="/get-shipment" class="block px-2 hover:bg-gray-200">Shipping Rates</RouterLink>
           </div>
@@ -99,7 +99,7 @@ const toggleDrawer = () => {
           <RouterLink to="/customer" class="flex items-baseline space-x-2">
             <i class="fi fi-rr-headset"></i><span>Customer Service</span>
           </RouterLink>
-          <div class="absolute hidden group-hover:block bg-white shadow-lg rounded p-2">
+          <div class="absolute hidden group-hover:block bg-white shadow-lg rounded  p-2">
             <RouterLink to="/faqs-page" class="block px-2 hover:bg-gray-200">FAQs</RouterLink>
             <RouterLink to="/contact-support" class="block px-2 hover:bg-gray-200">Contact Support</RouterLink>
             <RouterLink to="/about-us" class="block px-2 hover:bg-gray-200">About Us</RouterLink>
