@@ -1,8 +1,12 @@
 <template>
     <div class="w-full my-6">
         <h1 class="text-3xl font-semibold text-slate-900 p-4">Our Services</h1>
-        <div class="flex justify-evenly h-100  bg-slate-100 py-6 rounded">
-            <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col md:flex-row justify-evenly h-100  bg-slate-100 py-6 rounded">
+            <div class="grid gap-4"
+            :class="{
+            'grid-cols-1': true, /* Default for smaller screens */
+            'sm:grid-cols-2': true, /* Two columns for small screens and up */
+        }">
                 <CardComp
                 v-for="details in cardDetails"
                 :key="details.id"
@@ -12,7 +16,7 @@
                 @click="handleCardClick(details.id)"
             />
             </div>
-            <img class="w-1/2 rounded-md" src="https://img.freepik.com/free-photo/close-up-delivery-person-offering-parcel-client_23-2149095936.jpg?" alt="">
+            <img class="w-full md:w-1/2 rounded-md" src="https://img.freepik.com/free-photo/close-up-delivery-person-offering-parcel-client_23-2149095936.jpg?" alt="">
             
         </div>
 

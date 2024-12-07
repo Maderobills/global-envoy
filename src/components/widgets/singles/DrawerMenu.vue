@@ -45,7 +45,7 @@ const closeDrawer = () => {
 
     <!-- Drawer Content -->
     <div
-      class="absolute top-0 left-0 w-[80%] max-w-[400px] h-full bg-bgslate shadow-lg transform transition-transform duration-300 ease-in-out"
+      class="absolute top-0 left-0 w-[80%] max-w-[400px] h-full overflow-y-scroll bg-bgslate shadow-lg transform transition-transform duration-300 ease-in-out"
     >
       <!-- Close Button -->
       <button
@@ -58,13 +58,29 @@ const closeDrawer = () => {
 
       <!-- Logo -->
       <div class="text-center pt-16 pb-8">
+        <RouterLink
+            to="/"
+            class="block py-2 hover:bg-gray-100"
+            @click="closeDrawer"
+          >
         <h1 class="text-3xl font-semibold">
           Global<span class="font-extrabold text-slate-900">Envoy</span>
         </h1>
+      </RouterLink>
       </div>
 
       <!-- Navigation Links -->
       <nav class="px-6 space-y-6 text-lg">
+        <div class="border-b pb-4">
+          <RouterLink
+            to="/"
+            class="block py-2 hover:bg-gray-100"
+            @click="closeDrawer"
+          >
+            <i class="fi fi-tr-house-chimney"></i>Home
+          </RouterLink>
+        </div>
+
         <!-- Tracking Links -->
         <div class="border-b pb-4">
           <h3 class="font-semibold mb-2 text-slate-700">Track</h3>
@@ -112,7 +128,7 @@ const closeDrawer = () => {
             class="block py-2 hover:bg-gray-100"
             @click="closeDrawer"
           >
-            <i class="fi fi-rr-headset"></i>FAQs
+            <i class="fi fi-rr-comments-question"></i>FAQs
           </RouterLink>
           <RouterLink
             to="/contact-support"
