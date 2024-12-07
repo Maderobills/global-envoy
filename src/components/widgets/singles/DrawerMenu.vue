@@ -58,9 +58,15 @@ const closeDrawer = () => {
 
       <!-- Logo -->
       <div class="text-center pt-16 pb-8">
+        <RouterLink
+            to="/"
+            class="block py-2 hover:bg-gray-100"
+            @click="closeDrawer"
+          >
         <h1 class="text-3xl font-semibold">
           Global<span class="font-extrabold text-slate-900">Envoy</span>
         </h1>
+      </RouterLink>
       </div>
 
       <!-- Navigation Links -->
