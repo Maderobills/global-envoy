@@ -1,151 +1,79 @@
-// stores/creditCardStore.js
-import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { defineStore } from "pinia";
+import { loadStripe } from "@stripe/stripe-js"; // Import Stripe
+import { reactive } from "vue";
 
-export const useCreditCardStore = defineStore('creditCard', () => {
-  // State
-  const formData = ref({
-    cardNumber: '',
-    expiryDate: '',
-    cvv: ''
-  })
+// Create a store to manage credit card state and logic
+export const useCreditCardStore = defineStore("paymentStore", {
+  state: () => ({
+    stripe: null, // Will hold the Stripe instance
+    cardElement: null, // Will hold the card element
+    error: null, // To hold validation error messages
+    paymentMethodId: null, // The payment method ID (from Stripe)
+  }),
 
-  const errors = ref({
-    cardNumber: '',
-    expiryDate: '',
-    cvv: ''
-  })
+  actions: {
+    // Initialize Stripe and Stripe Elements
+    async initializeStripe() {
+      const stripe = await loadStripe("pk_test_51QTBCuGRH1ABoQcEIR4cQiRAkiMHflDo5xRHLbLQCoDX6KH9HZIzZw2mH22Z29ctf10WakXLtEjk8ZdR8RrbnPaK00L1hB6X7I"); // Replace with your Stripe public key
+      if (!stripe) {
+        this.error = "Stripe failed to load.";
+        return;
+      }
 
-  // Getters
-  const isValid = computed(() => {
-    return !errors.value.cardNumber && !errors.value.expiryDate && !errors.value.cvv
-  })
+      // Create an instance of Elements
+      const elements = stripe.elements();
 
-  // Helper functions
-  function luhnCheck(cardNumber) {
-    const digits = cardNumber.replace(/\D/g, '');
-    let sum = 0;
-    let isEven = false;
-    
-    for (let i = digits.length - 1; i >= 0; i--) {
-      let digit = parseInt(digits[i]);
-      
-      if (isEven) {
-        digit *= 2;
-        if (digit > 9) {
-          digit -= 9;
+      // Create an instance of the Card Element and mount it to the DOM
+      this.cardElement = elements.create("card");
+      this.cardElement.mount("#card-element"); // Ensure this element exists in your template
+
+      this.stripe = stripe; // Store the stripe instance in the store
+    },
+
+    // Validate the credit card details
+    async validateCard() {
+      if (!this.stripe || !this.cardElement) {
+        this.error = "Stripe is not initialized properly.";
+        return;
+      }
+
+      // Use Stripe to create a payment method (this validates the card)
+      const { token, error } = await this.stripe.createToken(this.cardElement);
+
+      if (error) {
+        this.error = error.message; // Set the error from Stripe
+        return;
+      }
+
+      // Successfully validated card and got a token
+      this.paymentMethodId = token.id; // Store the token ID or the payment method ID
+      return token;
+    },
+
+    // Example: Handle the form submission and validation
+    async handleSubmit() {
+      try {
+        // Validate card information with Stripe
+        const token = await this.validateCard();
+        
+        if (!token) {
+          throw new Error("Card validation failed.");
         }
-      }
-      
-      sum += digit;
-      isEven = !isEven;
-    }
-    
-    return sum % 10 === 0;
-  }
 
-  function formatCardNumber(value) {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/g, '');
-    const parts = [];
-
-    for (let i = 0; i < v.length; i += 4) {
-      parts.push(v.substring(i, i + 4));
-    }
-
-    return parts.join(' ');
-  }
-
-  function formatExpiryDate(value) {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/g, '');
-    if (v.length >= 2) {
-      return v.slice(0, 2) + '/' + v.slice(2, 4);
-    }
-    return v;
-  }
-
-  // Actions
-  function validateForm() {
-    errors.value = {
-      cardNumber: '',
-      expiryDate: '',
-      cvv: ''
-    }
-
-    // Validate Card Number
-    const cardNumber = formData.value.cardNumber.replace(/\s/g, '');
-    if (!cardNumber) {
-      errors.value.cardNumber = 'Card number is required';
-    } else if (!/^\d{13,19}$/.test(cardNumber)) {
-      errors.value.cardNumber = 'Card number must be between 13 and 19 digits';
-    } else if (!luhnCheck(cardNumber)) {
-      errors.value.cardNumber = 'Invalid card number';
-    }
-
-    // Validate Expiry Date
-    const expiry = formData.value.expiryDate;
-    if (!expiry) {
-      errors.value.expiryDate = 'Expiry date is required';
-    } else {
-      const [month, year] = expiry.split('/');
-      const currentYear = new Date().getFullYear() % 100;
-      const currentMonth = new Date().getMonth() + 1;
-      
-      if (!/^\d{2}\/\d{2}$/.test(expiry)) {
-        errors.value.expiryDate = 'Use MM/YY format';
-      } else if (parseInt(month) < 1 || parseInt(month) > 12) {
-        errors.value.expiryDate = 'Invalid month';
-      } else if (
-        parseInt(year) < currentYear || 
-        (parseInt(year) === currentYear && parseInt(month) < currentMonth)
-      ) {
-        errors.value.expiryDate = 'Card has expired';
+        // Proceed with your backend API call to process payment, pass token.id to the backend
+        console.log("Card validated. Token:", token.id);
+        
+        // Proceed with payment processing on your server
+        // You can send token.id to your backend for further processing (e.g., charge the card)
+        
+      } catch (error) {
+        console.error("Payment validation failed:", error);
+        this.error = error.message || "An error occurred during payment validation.";
       }
     }
+  },
 
-    // Validate CVV
-    if (!formData.value.cvv) {
-      errors.value.cvv = 'CVV is required';
-    } else if (!/^\d{3,4}$/.test(formData.value.cvv)) {
-      errors.value.cvv = 'CVV must be 3 or 4 digits';
-    }
-
-    return isValid.value;
-  }
-
-  function updateField(field, value) {
-    let formattedValue = value;
-
-    if (field === 'cardNumber') {
-      formattedValue = formatCardNumber(value);
-    } else if (field === 'expiryDate') {
-      formattedValue = formatExpiryDate(value);
-    } else if (field === 'cvv') {
-      formattedValue = value.replace(/\D/g, '').slice(0, 4);
-    }
-
-    formData.value[field] = formattedValue;
-    errors.value[field] = '';
-  }
-
-  function resetForm() {
-    formData.value = {
-      cardNumber: '',
-      expiryDate: '',
-      cvv: ''
-    }
-    errors.value = {
-      cardNumber: '',
-      expiryDate: '',
-      cvv: ''
-    }
-  }
-
-  return {
-    formData,
-    errors,
-    isValid,
-    validateForm,
-    updateField,
-    resetForm
-  }
-})
+  getters: {
+    getPaymentError: (state) => state.error,
+  },
+});
