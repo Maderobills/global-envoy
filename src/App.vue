@@ -136,7 +136,7 @@ const toggleDrawer = () => {
     <FooterView />
   </main>
 </template>
-<style scoped>
+<style>
 @import "@flaticon/flaticon-uicons/css/all/all.css";
 
 /* Transition Effects */
