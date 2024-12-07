@@ -1,6 +1,6 @@
 <template>
 <div class="p-6 bg-white rounded flex flex-col w-full md:w-4/5 justify-self-center">
-    <div class="firstpart space-y-10 flex justify-between items-center">
+    <div class="firstpart space-y-10 flex md:flex-row flex-col  justify-between items-center">
       <div>
         <h1 class="text-5xl font-bold mb-4 text-slate-900">
          Get Free Shipment Qoute

@@ -1,6 +1,6 @@
 <template>
 <div class="p-6 bg-white rounded flex flex-col w-full md:w-4/5 justify-self-center">
-      <div class="firstpart space-y-10 flex justify-between items-center flex-row-reverse">
+      <div class="firstpart space-y-10 flex md:flex-row-reverse justify-between items-center flex-col">
       <div class="ml-10 ">
         <h1 class="text-5xl font-bold mb-4 text-slate-900">
           Partner With Us
