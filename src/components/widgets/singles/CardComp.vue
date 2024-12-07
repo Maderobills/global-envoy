@@ -1,7 +1,7 @@
 <template>
     <div
     :class="isHovered? 'shadow-xl' : 'shadow-2xl'"
-        class="w-32 md:h-44 md:w-44 rounded-md transition  shadow-slate-300 flex flex-col justify-center items-center text-slate-900 hover:cursor-pointer space-y-1"
+        class="h-64 w-64 md:h-44 md:w-44 rounded-md transition  shadow-slate-300 flex flex-col justify-center items-center text-slate-900 hover:cursor-pointer space-y-1"
         
         @mouseover="isHovered = true"
         @mouseleave="isHovered = false"
