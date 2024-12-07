@@ -26,7 +26,7 @@
       <p v-if="store.errors.description" class="text-red-500 text-sm mt-1">{{ store.errors.description }}</p>
     </div>
 
-    <div class="grid grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
       <div>
         <label class="block text-sm font-medium mb-2">Length (cm)</label>
         <input 
@@ -62,12 +62,10 @@
       />
     </div>
 
-    <div class="flex gap-4">
-     
-
+    <div class="flex flex-col sm:flex-row gap-4">
       <button 
         @click="store.resetForm"
-        class="flex bg-gray-500 text-white py-3 px-6 rounded hover:bg-gray-600 transition-colors"
+        class="flex bg-gray-500 text-white py-3 px-6 rounded hover:bg-gray-600 transition-colors w-full sm:w-auto"
       >
         Reset
       </button>

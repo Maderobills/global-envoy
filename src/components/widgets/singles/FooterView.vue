@@ -1,5 +1,5 @@
 <template>
-    <section class="w-full flex flex-col space-y-6 p-4 md:p-8 lg:p-20 mb-4">
+    <section class="w-full flex flex-col space-y-6 p-4 md:p-8 lg:p-20 mb-6">
       <!-- Main Links Grid -->
       <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         <!-- Quick Links -->

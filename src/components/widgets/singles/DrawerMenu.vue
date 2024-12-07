@@ -84,6 +84,7 @@ const closeDrawer = () => {
           </RouterLink>
         </div>
 
+
         <!-- Shipping Links -->
         <div class="border-b pb-4">
           <h3 class="font-semibold mb-2 text-slate-700">Ship</h3>

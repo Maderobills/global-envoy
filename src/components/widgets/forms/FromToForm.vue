@@ -4,7 +4,7 @@
     <div class="space-y-2">
       <h1 class="text-lg text-emerald-600 font-semibold">From Origin</h1>
 
-      <div class="flex justify-between gap-4">
+      <div class="flex flex-col sm:flex-row justify-between gap-4">
         <div class="flex-1">
           <label class="block text-sm font-medium mb-2">From (City)</label>
           <input 
@@ -50,7 +50,7 @@
     <div class="space-y-2">
       <h1 class="text-lg text-emerald-600 font-semibold">To Destination</h1>
 
-      <div class="flex justify-between gap-4">
+      <div class="flex flex-col sm:flex-row justify-between gap-4">
         <div class="flex-1">
           <label class="block text-sm font-medium mb-2">To (City)</label>
           <input 
@@ -92,17 +92,16 @@
       </div>
     </div>
 
-    <div class="flex gap-4">
+    <div class="flex flex-col sm:flex-row gap-4">
       <button 
         @click="store.resetForm"
-        class="bg-gray-500 text-white py-3 px-6 rounded hover:bg-gray-600 transition-colors"
+        class="bg-gray-500 text-white py-3 px-6 rounded hover:bg-gray-600 transition-colors w-full sm:w-auto"
       >
         Reset
       </button>
     </div>
   </div>
 </template>
-
 <script setup>
 import { useDestinationStore } from '@/stores/destinationStore';
 import { countries } from '@/stores/countries'; // Import the countries list
