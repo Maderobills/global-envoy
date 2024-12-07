@@ -1,6 +1,6 @@
 <template>
     <main 
-        class="grid gap-6 w-full justify-center justify-self-center items-center h-1/2 p-6"
+        class="grid gap-6 md:w-1/2 w-full justify-center justify-self-center items-center h-1/2 p-6"
         :class="{
             'grid-cols-1': true, /* Default for smaller screens */
             'sm:grid-cols-2': true, /* Two columns for small screens and up */
