@@ -65,6 +65,16 @@ const closeDrawer = () => {
 
       <!-- Navigation Links -->
       <nav class="px-6 space-y-6 text-lg">
+        <div class="border-b pb-4">
+          <RouterLink
+            to="/"
+            class="block py-2 hover:bg-gray-100"
+            @click="closeDrawer"
+          >
+            <i class="fi fi-ts-shipping-timed"></i>Home
+          </RouterLink>
+        </div>
+
         <!-- Tracking Links -->
         <div class="border-b pb-4">
           <h3 class="font-semibold mb-2 text-slate-700">Track</h3>

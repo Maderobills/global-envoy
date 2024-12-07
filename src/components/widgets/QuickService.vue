@@ -1,6 +1,6 @@
 <template>
     <main 
-        class="grid gap-6 w-1/2 justify-center justify-self-center items-center h-1/2 p-6"
+        class="grid gap-6 w-full justify-center justify-self-center items-center h-1/2 p-6"
         :class="{
             'grid-cols-1': true, /* Default for smaller screens */
             'sm:grid-cols-2': true, /* Two columns for small screens and up */
@@ -29,7 +29,7 @@ const cardDetails = ref([
         icon: "fi fi-rr-check-in-calendar", 
         title: "Add Shipment", 
         desc: 'Create new shipment record and track your delivery',
-        toPath: "create-shipment"
+        toPath: "/create-shipment"
     },
     { 
         id: 2, 
