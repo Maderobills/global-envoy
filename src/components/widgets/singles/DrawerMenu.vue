@@ -77,7 +77,7 @@ const closeDrawer = () => {
             class="block py-2 hover:bg-gray-100"
             @click="closeDrawer"
           >
-            <i class="fi fi-ts-shipping-timed"></i>Home
+            <i class="fi fi-ts-home"></i>Home
           </RouterLink>
         </div>
 
