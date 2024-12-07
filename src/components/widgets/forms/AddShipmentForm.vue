@@ -1,31 +1,30 @@
 <template>
   <div class="bg-white">
     <!-- Progress Steps -->
-    <div class="flex justify-between mb-8">
-      <div 
-        v-for="(step, index) in steps" 
-        :key="index" 
-        class="flex flex-col items-center cursor-pointer w-1/4" 
-        :class="[
-          currentStep === index ? 'text-slate-900' : 'text-gray-500',
-          { 'cursor-not-allowed': !canNavigateToStep(index) }
-        ]" 
-        @click="handleStepClick(index)"
-      >
-        <i class="w-10 h-8 text-2xl" :class="step.icon"></i>
-        <span class="text-sm font-medium">{{ step.title }}</span>
-        <div 
-          class="h-1 w-full mt-2" 
-          :class="[
-            currentStep === index ? 'bg-bgslate' : 'bg-gray-200',
-            { 'bg-green-500': completedSteps[index] }
-          ]" 
-        />
-      </div>
-    </div>
-
+    <div class="hidden sm:flex flex-col sm:flex-row justify-between mb-8">
+  <div 
+    v-for="(step, index) in steps" 
+    :key="index" 
+    class="flex flex-col items-center cursor-pointer w-full sm:w-1/4" 
+    :class="[
+      currentStep === index ? 'text-slate-900' : 'text-gray-500',
+      { 'cursor-not-allowed': !canNavigateToStep(index) }
+    ]" 
+    @click="handleStepClick(index)"
+  >
+    <i class="w-10 h-8 text-2xl" :class="step.icon"></i>
+    <span class="text-sm font-medium text-center">{{ step.title }}</span>
+    <div 
+      class="h-1 w-full mt-2" 
+      :class="[
+        currentStep === index ? 'bg-bgslate' : 'bg-gray-200',
+        { 'bg-green-500': completedSteps[index] }
+      ]" 
+    />
+  </div>
+</div>
     <!-- Form Sections -->
-    <div class="max-w-4xl mx-auto bg-white p-6 shadow-lg rounded-lg">
+    <div class=" bg-white p-6 shadow-lg rounded-lg">
       <component 
         :is="currentComponent" 
         ref="formRef"
@@ -33,7 +32,7 @@
       />
       
       <!-- Navigation Buttons -->
-      <div class="flex justify-between mt-8">
+      <div class="flex flex-col sm:flex-row justify-between mt-8">
         <button 
           @click="previousStep" 
           :disabled="currentStep === 0"
@@ -46,7 +45,7 @@
         <button 
           @click="nextStep" 
           :disabled="currentStep === steps.length - 1 || isLoading"
-          class="px-6 py-2 rounded-full text-white transition-colors"
+          class="mt-4 sm:mt-0 sm:ml-4 px-6 py-2 rounded-full text-white transition-colors"
           :class="[
             currentStep === steps.length - 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-slate-900 hover:bg-slate-600',
             { 'opacity-75 cursor-wait': isLoading }

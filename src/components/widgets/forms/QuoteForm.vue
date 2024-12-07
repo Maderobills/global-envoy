@@ -2,8 +2,8 @@
   <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
     <h2 class="text-2xl font-bold mb-4">Get a Shipping Quote</h2>
 
-    <main class="flex text-sm">
-      <div class="w-1/2">
+    <main class="flex flex-col sm:flex-row text-sm">
+      <div class="flex-1">
         <!-- Destination Information -->
         <h3 class="text-xl font-semibold mt-2">Origin Information</h3>
         <div>
@@ -17,8 +17,8 @@
           <h4>Package: {{ packageStore.formData.packageType }}</h4>
           <h4>Weight: {{ packageStore.formData.weight }}kg</h4>
           <div class="flex space-x-5">
-            <h4>H: {{  packageStore.formData.height }}cm</h4>
-            <h4>L: {{  packageStore.formData.length }}cm</h4>
+            <h4>H: {{ packageStore.formData.height }}cm</h4>
+            <h4>L: {{ packageStore.formData.length }}cm</h4>
             <h4>W: {{ packageStore.formData.width }}cm</h4>
           </div>
         </div>
@@ -28,7 +28,7 @@
         <span>{{ additionalStore.formData.insurance ? 'Insurance: Yes' : 'No insurance' }}</span>
       </div>
 
-      <div class="w-1/2 ml-10 space-y-4">
+      <div class="flex-1 mt-4 sm:mt-0 sm:ml-10 space-y-4">
         <h3 class="text-xl font-semibold mt-2">Estimated Information</h3>
         <div>
           <h4 class="text-emerald-600">Estimated Delivery Date</h4>
@@ -40,7 +40,6 @@
         </div>
       </div>
     </main>
-
   </div>
 </template>
 

@@ -11,10 +11,17 @@
       </p>
     </div>
 
-    <div class="flex justify-between gap-4 flex-row-reverse">
+    <div class="flex flex-col sm:flex-row justify-between gap-4">
+      <button
+        @click="handleReset"
+        class="bg-gray-500 text-white py-3 px-6 rounded hover:bg-gray-600 transition-colors w-full sm:w-auto"
+      >
+        Reset
+      </button>
+
       <button
         @click="handleSubmit"
-        class="bg-emerald-500 text-white py-3 px-6 rounded hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        class="bg-emerald-500 text-white py-3 px-6 rounded hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
         :disabled="isLoading"
       >
         <span v-if="isLoading" class="flex items-center justify-center">
@@ -22,13 +29,6 @@
           <span>Submitting...</span>
         </span>
         <span v-else>Submit</span>
-      </button>
-
-      <button
-        @click="handleReset"
-        class="bg-gray-500 text-white py-3 px-6 rounded hover:bg-gray-600 transition-colors"
-      >
-        Reset
       </button>
     </div>
   </div>
