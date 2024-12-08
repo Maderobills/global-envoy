@@ -4,7 +4,7 @@
         <div class="flex flex-col md:flex-row justify-evenly h-100  bg-slate-100 py-6 rounded">
             <div class="grid gap-4"
             :class="{
-            'grid-cols-1': true, /* Default for smaller screens */
+            'grid-cols-1 justify-items-center': true, /* Default for smaller screens */
             'sm:grid-cols-2': true, /* Two columns for small screens and up */
         }">
                 <CardComp
