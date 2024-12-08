@@ -15,6 +15,7 @@
       <button
         @click="handleReset"
         class="bg-gray-500 text-white py-3 px-6 rounded hover:bg-gray-600 transition-colors w-full sm:w-auto"
+        :disabled="isLoading"
       >
         Reset
       </button>
@@ -35,50 +36,50 @@
 </template>
 
 <script setup>
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import Swal from "sweetalert2";
+import { doc, setDoc, arrayUnion } from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
+import { firebaseApp } from "@/firebase";
+
+// Import stores and helpers
 import { useDestinationStore } from "@/stores/destinationStore";
 import { usePackageStore } from "@/stores/packageStore";
 import { useAdditionalStore } from "@/stores/additionalStore";
 import { useShipmentStore } from "@/stores/shipmentStore";
-import { arrayUnion, doc, setDoc } from "firebase/firestore";
-import { getFirestore } from "firebase/firestore";
-import { firebaseApp } from "@/firebase";
 import { useCalcStore } from "@/stores/calcStore";
-import { generateTrackingNumber } from "@/stores/trackGenerator.js";
-import { computed, onMounted, ref } from "vue";
 import { useFirebaseStore } from "@/stores/firebaseStore";
-import Swal from "sweetalert2";
 import { useCreditCardStore } from "@/stores/paymentStore";
-import router from "@/router";
+import { generateTrackingNumber } from "@/stores/trackGenerator";
 
 const db = getFirestore(firebaseApp);
-const store = useCreditCardStore();
+const router = useRouter();
+
+const isLoading = ref(false);
+const paymentError = ref("");
+
+// Stores
+const creditCardStore = useCreditCardStore();
 const destinationStore = useDestinationStore();
 const packageStore = usePackageStore();
 const additionalStore = useAdditionalStore();
 const shipmentStore = useShipmentStore();
 const calcStore = useCalcStore();
-const isLoading = ref(false);
-
-
-const shipmentId = generateTrackingNumber({
-  prefix: "GLO", // Custom prefix for shipment ID
-  length: 15, // Custom length for the tracking number
-});
-
-const customerId = generateTrackingNumber({
-  prefix: "GLO", // Custom prefix for shipment ID
-  length: 8, // Custom length for the tracking number
-});
-
 const firebaseStore = useFirebaseStore();
 
+// User-related properties
 const user = computed(() => firebaseStore.user);
 const isLoggedIn = computed(() => !!user.value?.uid);
 const userId = computed(() => user.value?.uid);
 
+// Generate tracking numbers
+const shipmentId = generateTrackingNumber({ prefix: "GLO", length: 15 });
+const customerId = generateTrackingNumber({ prefix: "GLO", length: 8 });
+
+// Validation functions
 const validateDestinationStore = () => {
-  const { toCountry, toCity, fromCountry, fromCity } =
-    destinationStore.formData;
+  const { toCountry, toCity, fromCountry, fromCity } = destinationStore.formData;
 
   if (!toCountry || !toCity || !fromCountry || !fromCity) {
     throw new Error("Please complete all fields in the destination form.");
@@ -90,8 +91,7 @@ const validateDestinationStore = () => {
 };
 
 const validatePackageStore = () => {
-  const { packageType, description, width, length, weight, height } =
-    packageStore.formData;
+  const { packageType, description, width, length, weight, height } = packageStore.formData;
 
   if (!packageType || !description || !width || !length || !weight || !height) {
     throw new Error("Please complete all fields in the package form.");
@@ -102,34 +102,25 @@ const validatePackageStore = () => {
   }
 };
 
-const creditCardStore = useCreditCardStore();
-const paymentError = ref("");
-const loading = ref(false);
-
 // Mount Stripe Card Element
 onMounted(() => {
-  creditCardStore.initializeStripe("card-element"); // Mount Stripe Card Element
+  creditCardStore.initializeStripe("card-element");
 });
 
+// Handle form submission
 const handleSubmit = async () => {
   isLoading.value = true;
   try {
-    // Validate form data
+    // Validate inputs
     validateDestinationStore();
     validatePackageStore();
 
-    // Format the current date and time
     const shipmentDate = new Date().toLocaleString();
-
-    // Construct destination and origin addresses
     const destinationAddress = `${destinationStore.formData.toCountry}, ${destinationStore.formData.toCity}`;
     const originAddress = `${destinationStore.formData.fromCountry}, ${destinationStore.formData.fromCity}`;
-
-    // Extract other data
     const estimateDeliveryDate = calcStore.quote.deliveryDate;
     const trackingNumbers = shipmentId;
 
-    // Construct the shipment data object
     const shipmentData = {
       shipmentId,
       customerId,
@@ -139,7 +130,6 @@ const handleSubmit = async () => {
       estimateDeliveryDate,
     };
 
-    // Construct package details
     const PackageDetails = {
       packageType: packageStore.formData.packageType,
       description: packageStore.formData.description,
@@ -149,7 +139,6 @@ const handleSubmit = async () => {
       height: packageStore.formData.height,
     };
 
-    // Construct tracking status
     const pendingPackage = {
       location: "Order awaiting approval",
       note: "Processing",
@@ -162,127 +151,52 @@ const handleSubmit = async () => {
       pendingPackage,
     };
 
-    const firstName = customerId;
-    const lastName = customerId;
-    const uid = trackingNumbers;
-
-    // Handle Stripe payment
     const token = await creditCardStore.validateCard();
-    if (!token) {
-      throw new Error(
-        "Card validation failed. Please check your card details."
-      );
-    }
+    if (!token) throw new Error("Card validation failed. Please check your card details.");
 
-    // Define payment data
     const paymentData = {
-      paymentMethodId: token.id, // or this.paymentMethodId
-      amount: parseFloat(calcStore.quote.totalCost), // Replace with actual amount
-      currency: "usd", // Replace with your currency
+      paymentMethodId: token.id,
+      amount: parseFloat(calcStore.quote.totalCost),
+      currency: "usd",
       status: "pending",
       timestamp: shipmentDate,
     };
 
-    // Check user login state and save to appropriate Firestore path
+    // Firestore operations
     if (!userId.value) {
-      // Save to global tracking collection if user is not logged in
-      const docRall = doc(db, `Tracking/${shipmentId}`);
-      const docRefall = doc(
-        db,
-        `Tracking/${shipmentId}/Shipments/${shipmentId}`
-      );
-      const docTrackall = doc(
-        db,
-        `Tracking/${shipmentId}/Shipments/${shipmentId}/Tracking/${shipmentId}`
-      );
+      // Global tracking collection
+      await setDoc(doc(db, `Tracking/${shipmentId}`), {
+        firstName: customerId,
+        lastName: customerId,
+        uid: trackingNumbers,
+        trackingNumbers: arrayUnion(trackingNumbers),
+      }, { merge: true });
 
-      await setDoc(
-        docRall,
-        {
-          firstName,
-          lastName,
-          uid,
-          trackingNumbers: arrayUnion(trackingNumbers),
-        },
-        { merge: true }
-      );
-      await setDoc(docRefall, shipmentData, { merge: true });
-      await setDoc(docTrackall, trackingStatus, { merge: true });
-      // Save payment data here
-      await setDoc(
-        doc(db, `Tracking/${shipmentId}/Payments/${shipmentId}`),
-        paymentData,
-        { merge: true }
-      );
+      await setDoc(doc(db, `Tracking/${shipmentId}/Shipments/${shipmentId}`), shipmentData, { merge: true });
+      await setDoc(doc(db, `Tracking/${shipmentId}/Payments/${shipmentId}`), paymentData, { merge: true });
+      await setDoc(doc(db, `Tracking/${shipmentId}/Shipments/${shipmentId}/Tracking/${shipmentId}`), trackingStatus, { merge: true });
     } else {
-      // Save to user-specific tracking collection
-      const docR = doc(db, `Users/${userId.value}`);
-      const docRef = doc(db, `Users/${userId.value}/Shipments/${shipmentId}`);
-      const docTrack = doc(
-        db,
-        `Users/${userId.value}/Shipments/${shipmentId}/Tracking/${shipmentId}`
-      );
+      // User-specific tracking collection
+      await setDoc(doc(db, `Users/${userId.value}`), {
+        trackingNumbers: arrayUnion(trackingNumbers),
+      }, { merge: true });
 
-      await setDoc(
-        docR,
-        { trackingNumbers: arrayUnion(trackingNumbers) },
-        { merge: true }
-      );
-      await setDoc(docRef, shipmentData, { merge: true });
-      await setDoc(docTrack, trackingStatus, { merge: true });
-      // Save payment data here
-      await setDoc(
-        doc(
-          db,
-          `Users/${userId.value}/Shipments/${shipmentId}/Payments/${shipmentId}`
-        ),
-        paymentData,
-        { merge: true }
-      );
+      await setDoc(doc(db, `Users/${userId.value}/Shipments/${shipmentId}`), shipmentData, { merge: true });
+      await setDoc(doc(db, `Users/${userId.value}/Shipments/${shipmentId}/Payments/${shipmentId}`), paymentData, { merge: true });
+      await setDoc(doc(db, `Users/${userId.value}/Shipments/${shipmentId}/Tracking/${shipmentId}`), trackingStatus, { merge: true });
     }
 
-    // Show success alert using SweetAlert2
     await Swal.fire({
       icon: "success",
       title: "Shipment created successfully!",
-      html: `Please copy your tracking number: <strong>${trackingNumbers}</strong>`,
-      showCancelButton: false,
+      html: `Tracking Number: <strong>${trackingNumbers}</strong>`,
       confirmButtonText: "Copy Tracking Number",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Copy the tracking number to clipboard
-        navigator.clipboard
-          .writeText(trackingNumbers)
-          .then(() => {
-            Swal.fire(
-              "Copied!",
-              "Tracking number has been copied to clipboard.",
-              "success"
-            );
-          })
-          .catch((err) => {
-            Swal.fire(
-              "Error",
-              "Failed to copy tracking number. Please copy it manually.",
-              "error"
-            );
-            isLoading.value = false;
-          });
-          isLoading.value = false;
-        location.reload();
-      }
-    });
+    }).then(() => navigator.clipboard.writeText(trackingNumbers));
 
-    console.log("Data saved successfully!");
+    router.push("/TrackPackage");
   } catch (error) {
-    console.error("Error submitting form:", error.message);
-
-    // Show error alert using SweetAlert2
-    await Swal.fire({
-      icon: "error",
-      title: "Submission failed!",
-      text: `An error occurred: ${error.message}`,
-    });
+    Swal.fire({ icon: "error", title: "Submission Failed", text: error.message });
+  } finally {
     isLoading.value = false;
   }
 };
