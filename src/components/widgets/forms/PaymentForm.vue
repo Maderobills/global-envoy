@@ -266,9 +266,9 @@ const handleSubmit = async () => {
               "Failed to copy tracking number. Please copy it manually.",
               "error"
             );
+            isLoading.value = false;
           });
           isLoading.value = false;
-        router.replace("/TrackPackage");
         location.reload();
       }
     });
@@ -283,6 +283,7 @@ const handleSubmit = async () => {
       title: "Submission failed!",
       text: `An error occurred: ${error.message}`,
     });
+    isLoading.value = false;
   }
 };
 </script>
