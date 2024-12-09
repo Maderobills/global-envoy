@@ -13,7 +13,6 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import { countries } from '@/stores/countries';
 const emit = defineEmits(['update:modelValue']);
 
