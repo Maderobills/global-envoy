@@ -5,7 +5,7 @@
         <h4>Tracking Number: <span class="font-thin">{{ trackingNumber }}</span></h4>
       </div>
       <div class="w-full flex justify-between">
-        <h4>Delivered from: <span class="font-thin">{{ deliveredFrom }}</span></h4>
+        <h4>Delivering from: <span class="font-thin">{{ deliveredFrom }}</span></h4>
         <h4>Delivered To: <span class="font-thin">{{ deliveredTo }}</span></h4>
       </div>
       <h4>Estimated Delivery: <span class="font-thin">{{ estimatedDelivery }}</span></h4>

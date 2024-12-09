@@ -8,8 +8,7 @@
       'border-red-500': status === 'failed'
     }"
   >
-    <i class="fi fi-ts-bullet flex items-center text-base sm:text-lg pl-2 sm:pl-4 mt-1 sm:mt-0"></i>
-    <div class="bg-white flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-slate-600 text-sm sm:text-base">
+    <div class="px-4 bg-white flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-slate-600 text-sm sm:text-base">
       <div class="flex items-center gap-2">
         <h4 class="line-clamp-2 sm:line-clamp-1">{{ note }}</h4>
         <i class="fi fi-tr-horizontal-rule hidden sm:flex items-center"></i>
