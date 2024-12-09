@@ -61,7 +61,7 @@
           <DashTrack
             v-if="!error && shipmentData"
             :package-id="shipmentData.customerId"
-            :tracking-number="shipmentData.trackingNumbers"
+            :tracking-number="shipmentData.shipmentId"
             :delivered-from="shipmentData.destinationAddress"
             :delivered-to="shipmentData.originAddress"
             :estimated-delivery="shipmentData.estimateDeliveryDate"
