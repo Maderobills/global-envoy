@@ -91,9 +91,10 @@
 </template>
 
 <script setup>
-import { useTrackStore } from "@/stores/crudStatusStore";
+
 import { ref, computed, onMounted } from "vue";
 import Swal from "sweetalert2";
+import { useTrackStore } from "@/stores/crudStatusStore";
 
 const props = defineProps(["uid", "trackingNum"]);
 const statusStore = useTrackStore();

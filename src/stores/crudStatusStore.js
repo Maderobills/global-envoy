@@ -42,13 +42,13 @@ export const useTrackStore = defineStore('trackStore', {
     async updateTrackingData(docPath, updateData) {
       this.loading = true;
       this.error = null;
-
+    
       const docRef = doc(db, docPath);
-
+    
       try {
         await updateDoc(docRef, updateData);
         console.log('Document updated:', updateData);
-
+    
         // Optionally fetch the updated data
         await this.fetchTrackingData(docPath);
       } catch (err) {
@@ -58,6 +58,7 @@ export const useTrackStore = defineStore('trackStore', {
         this.loading = false;
       }
     },
+        
     async setTrackingData(docPath, newData) {
       this.loading = true;
       this.error = null;
