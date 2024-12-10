@@ -139,7 +139,7 @@ const handleSubmit = async () => {
       height: packageStore.formData.height,
     };
 
-    const pendingPackage = {
+    const PENDING = {
       location: "Order awaiting approval",
       note: "Processing",
       date: shipmentDate,
@@ -148,7 +148,7 @@ const handleSubmit = async () => {
 
     const trackingStatus = {
       PackageDetails,
-      pendingPackage,
+      PENDING,
     };
 
     const token = await creditCardStore.validateCard();
