@@ -166,7 +166,7 @@ const showNoResultsMessage = computed(() =>
 const sortedTrackingStages = computed(() => {
   if (!trackStore.content) return [];
   
-  const stageOrder = ['pendingPackage', 'packaging', 'transit1', 'transit2', 'delivered'];
+  const stageOrder = ["PENDING", "PACKAGING", "TRANSIT1", "TRANSIT2", "TRANSIT3", "TRANSIT4", "ARRIVING", "DELIVERED"];
   
   return stageOrder
     .map(key => ({

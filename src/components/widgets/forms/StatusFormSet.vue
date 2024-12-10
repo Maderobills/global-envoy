@@ -98,7 +98,7 @@ import { useTrackStore } from "@/stores/crudStatusStore";
 const props = defineProps(["uid", "trackingNum"]);
 const statusStore = useTrackStore();
 
-const transitOptions = ["PENDING", "PACKAGING", "TRANSIT1", "TRANSIT2", "TRANSIT3", "TRANSIT4", "ARRIVING", "DELIVERED"];
+const transitOptions = ["PENDING", "PACKAGING", "TRANSIT1", "TRANSIT2", "TRANSIT3", "TRANSIT4", "ARRIVED", "DELIVERED"];
 const statusOptions = ["PENDING","PICKED-UP", "IN-TRANSIT", "ON-HOLD", "DELIVERED"];
 
 const formData = ref({

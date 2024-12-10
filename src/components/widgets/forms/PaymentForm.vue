@@ -140,10 +140,10 @@ const handleSubmit = async () => {
     };
 
     const pendingPackage = {
-      location: "Order awaiting approval",
-      note: "Processing",
+      location: "ORDER AWAITING APPROVAL",
+      note: "PROCEESSING",
       date: shipmentDate,
-      status: "pending",
+      status: "PENDING",
     };
 
     const trackingStatus = {
