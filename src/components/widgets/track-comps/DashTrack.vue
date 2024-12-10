@@ -6,7 +6,7 @@
       </div>
       <div class="w-full flex justify-between">
         <h4>Delivering from: <span class="font-thin">{{ deliveredFrom }}</span></h4>
-        <h4>Delivered To: <span class="font-thin">{{ deliveredTo }}</span></h4>
+        <h4>Delivering To: <span class="font-thin">{{ deliveredTo }}</span></h4>
       </div>
       <h4>Estimated Delivery: <span class="font-thin">{{ estimatedDelivery }}</span></h4>
     </div>
