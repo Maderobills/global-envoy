@@ -138,6 +138,7 @@ const handleSubmit = async () => {
       weight: packageStore.formData.weight,
       height: packageStore.formData.height,
     };
+  
 
     const PENDING = {
       location: "Order awaiting approval",
