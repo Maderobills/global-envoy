@@ -1,10 +1,9 @@
 <template>
   <div class="min-h-10 border-l-4 flex items-start sm:items-center rounded p-2 sm:p-0" :class="{
-    'border-emerald-500': status === 'success',
-    'border-yellow-500': status === 'pending',
-    'border-orange-500': status === 'hold',
-    'border-red-500': status === 'failed'
-  }">
+  'border-emerald-500': ['SUCCESS', 'PICKED-UP', 'DELIVERED'].includes(status),
+  'border-yellow-500': ['PENDING', 'IN-TRANSIT'].includes(status),
+  'border-orange-500': status === 'ON-HOLD',
+}">
     <div
       class="px-4 bg-white flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-slate-600 text-sm sm:text-base">
       <div class="flex items-center gap-2">
